@@ -1,0 +1,377 @@
+# Tower — Data Mapping Reference
+**Version:** `0.1.0-alpha.5`  
+**Document Type:** Backend Integration Spec — Data Binding Audit  
+**Coverage:** All five view-layer implementations  
+
+> This document catalogs every single piece of mocked data currently rendered in the UI. Nothing in this list is live. All of it must be replaced with real data before the application can be considered production-ready.
+
+---
+
+## Table of Contents
+1. [Global / Shared Shell](#1-global--shared-shell)
+2. [/app/discover — Home Search](#2-appdiscover--home-search)
+3. [/app/feed — Search Results & Trending Feed](#3-appfeed--search-results--trending-feed)
+4. [/app/intelligence — Topic Intelligence](#4-appintelligence--topic-intelligence)
+5. [/app/creators/[username] — Creator Intelligence](#5-appcreatorusername--creator-intelligence)
+6. [/app/posts/[id] — Post Intelligence](#6-apppostsid--post-intelligence)
+7. [Entity Summary & Suggested DB Tables](#7-entity-summary--suggested-db-tables)
+
+---
+
+## 1. Global / Shared Shell
+
+**File:** `src/app/app/layout.tsx`
+
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Top bar — logged-in user avatar | First-letter placeholder `"A"` | Authenticated user profile (name, avatar URL) |
+| Top bar — notifications bell | Static icon, no count badge | Unread notification count for current user |
+| Sidebar — "Market Pulse: Active" status text | Hardcoded string | Platform-wide signal ingestion status (live/paused/error) |
+| Sidebar — nav items | Hardcoded list | Could remain static (navigation is structural) |
+| Sidebar — "New Inquiry" button | Non-functional | Action to create a new tracked topic or query |
+
+---
+
+## 2. `/app/discover` — Home Search
+
+**File:** `src/app/app/discover/page.tsx`
+
+### Search Input
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Search query value | Controlled state, no API | Query → `/app/feed?q=...` with real search results |
+
+### Autocomplete Dropdown
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Suggestion row 1: `"canada immigration"` | Hardcoded | Top trending search queries (global or user-specific) |
+| Suggestion row 2: `"real estate trends"` | Hardcoded | Same — ordered by signal volume or recency |
+| Suggestion row 3: `"tech talent toronto"` | Hardcoded | Same |
+| Suggestion row 4: `"semiconductor supply chain"` | Hardcoded | Same |
+| Suggestion row 5: `"interest rate forecasts Q4"` | Hardcoded | Same |
+| Suggestion row 6: `"electric vehicle adoption rates"` | Hardcoded | Same |
+| Suggestion row 7: `"remote work productivity meta-analysis"` | Hardcoded | Same |
+| Category labels (`Macro`, `Sector`, `Regional`, `Supply`, `Finance`, `Auto`, `Labour`) | Hardcoded | Topic category tag — from query taxonomy table |
+
+### Trending Chips
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| `"Trending: NVIDIA Q3"` | Hardcoded | Top-N trending topics by signal velocity in last 24h |
+| `"Copper Futures"` | Hardcoded | Same |
+| `"EU Carbon Credits"` | Hardcoded | Same |
+| `"Brazil Agri-Export"` | Hardcoded | Same |
+
+### Bottom Ticker Bar
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| SPX — `5,432.12` / `+0.42%` | Hardcoded | Live market data feed (financial API: Yahoo Finance, Polygon.io, Alpha Vantage) |
+| BTC/USD — `62,841.00` / `-1.22%` | Hardcoded | Same |
+| WTI CRUDE — `78.45` / `+1.15%` | Hardcoded | Same |
+| GOLD — `2,514.20` / `+0.08%` | Hardcoded | Same |
+| EUR/USD — `1.1042` / `-0.12%` | Hardcoded | Same |
+| Treasury 10Y — `3.842%` / `-0.015` | Hardcoded | Same |
+
+---
+
+## 3. `/app/feed` — Search Results & Trending Feed
+
+**File:** `src/app/app/feed/page.tsx`
+
+### Top Filter Bar
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Search input value | Hardcoded `"canada immigration"` | Bound to URL query param `?q=` |
+| Location / Timeframe / Platform filter tabs | Non-functional, no state | Filter dimensions applied to signal query |
+
+### Signal Results Table
+Each row is one tracked topic. All rows are hardcoded:
+
+#### Row 1 — `"canada immigration"`
+| Field | Current Mock | Data Source Needed |
+|---|---|---|
+| Topic name | `"canada immigration"` | `topics.name` |
+| Hashtags | `#visaprocessing #expressentry` | `topics.tags[]` |
+| Signal volume | `12.4k` | `topics.signal_count` (rolling 24h) |
+| Sparkline shape | Hardcoded SVG path | Hourly signal counts for the topic (array of 7 data points) |
+| Spark trending direction | Boolean `true` | Derived: `current_hour_count > prev_hour_count` |
+| Started | `"15 hours ago"` | `topics.first_signal_at` (relative timestamp) |
+| Status | `"Active"` | `topics.status` enum |
+| Source icons | `alternate_email`, `video_library` | `topics.platforms[]` — array of platform identifiers |
+
+#### Row 2 — `"housing crisis vancouver"`
+| Field | Mock Value | Needs |
+|---|---|---|
+| Volume | `8.1k` | `topics.signal_count` |
+| Sparkline | Flat SVG | Hourly time-series |
+| Started | `"18 hours ago"` | `topics.first_signal_at` |
+| Source | `public` | `topics.platforms[]` |
+
+#### Rows 3 & 4 — same pattern as above
+
+### Detail Panel (right side — driven by selected row)
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Topic name | `"Canada Immigration"` | `topics.name` |
+| Subtitle | `"Global Intelligence Pulse"` | Static UI label (no data needed) |
+| 24H trend percentage | `"+18.4%"` | `topics.signal_delta_24h_pct` |
+| Interest trend sparkline | Hardcoded SVG quadratic path | Hourly aggregated signal counts (array → rendered as SVG) |
+| Breakdown chips | `Work Permits`, `Express Entry`, `Provincial Nominees`, `Student Visas` | `topics.subtopics[]` or `topics.taxonomy[]` |
+| "In the News" — headline 1 | IRCC Express Entry headline | `news_items.headline` where `topic_id = selected_topic` |
+| "In the News" — source 1 | `REUTERS • 2h ago` | `news_items.source`, `news_items.published_at` |
+| "In the News" — thumbnail 1 | Placeholder `div` | `news_items.thumbnail_url` |
+| "In the News" — headlines 2 & 3 | BNN Bloomberg, Globe and Mail | Same — top 3 news items for topic |
+
+---
+
+## 4. `/app/intelligence` — Topic Intelligence
+
+**File:** `src/app/app/intelligence/page.tsx`
+
+### Topic Header
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Topic name | `"Canada Immigration"` | `topics.name` (from URL slug or search) |
+| Signal count | `"3,847 demand signals"` | `topics.signal_count` |
+| Last updated | `"4m ago"` | `topics.last_scraped_at` |
+
+### 4-KPI Stat Grid
+| Stat | Current Mock | Data Source Needed |
+|---|---|---|
+| Total Questions | `12,402` | `topics.total_signals` |
+| Unanswered | `1,284` | `topics.unanswered_signals` |
+| Avg Response Time | `2.4h` | `topics.avg_response_time_hours` |
+| Top Platform | `Reddit` | `topics.top_platform` |
+
+### Urgency Gauge (SVG ring)
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Gauge score | `69` | `topics.urgency_score` (0–100, computed) |
+| Label | `"Volatility Alert"` | Derived from urgency tier thresholds |
+| Description | `"Urgency is driving this topic..."` | `topics.urgency_summary` (LLM-generated or template) |
+
+### News Ticker
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| `09:12` — IRCC study permit caps | Hardcoded | `news_items` filtered by `topic_id`, ordered by `published_at` |
+| `08:45` — Ontario PnP portal | Hardcoded | Same |
+| `07:30` — Express Entry draw #284 | Hardcoded | Same |
+
+### Section A — Trending Posts
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Hero card — image | Gradient `div` | `posts.thumbnail_url` |
+| Hero card — platform badge | `"REDDIT / VIRAL"` | `posts.platform`, `posts.is_viral` flag |
+| Hero card — headline | Hardcoded Reddit title | `posts.title` |
+| List item 1 — image | Empty `div` | `posts.thumbnail_url` |
+| List item 1 — title | "New Proof of Funds..." | `posts.title` |
+| List item 1 — meta | `"342 Comments • 2.4k Upvotes"` | `posts.comment_count`, `posts.upvote_count` |
+| List item 2 — same pattern | | Same fields |
+
+### Section A — Popular Intent
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Query 1 — `"express entry 2024"` | Hardcoded | `popular_queries.query_text` |
+| Query 1 — `842 Q/HR` | Hardcoded | `popular_queries.rate_per_hour` |
+| Queries 2–4 — same pattern | | Same |
+| Volume heatmap bars (8 bars) | Hardcoded opacity values | Hourly distribution of query volume (normalized to 0–1) |
+
+### Section A — Intelligence Nodes (Creators)
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Creator 1 — name `"ImmiVision Lab"` | Hardcoded | `creators.display_name` |
+| Creator 1 — role `"Expert Analyst"` | Hardcoded | `creators.category` |
+| Creator 1 — followers `"42.1k"` | Hardcoded | `creators.follower_count` |
+| Creator 1 — growth `"+12%"` | Hardcoded | `creators.follower_growth_7d_pct` |
+| Creators 2 & 3 — same pattern | | Same fields |
+| Active / Gainers / Losers tab state | Non-functional | Sort param applied to creator query |
+
+### Section B — Interest Over Time (SVG Area Chart)
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| SVG path (area + stroke) | Hardcoded 24-point path | Hourly signal counts for topic — array of ~24 integers rendered as SVG polyline |
+| Hover tooltip — `"842 reqs @ 15:00 UTC"` | Hardcoded positioned element | Interactive: clientX → data point lookup |
+| Timeframe select (`LAST 24 HOURS`) | Non-functional | Filter param: `?timeframe=24h|7d` |
+
+### Section C — Global Top Queries Table
+| Field | Current Mock | Data Source Needed |
+|---|---|---|
+| Rank | 1–4 | Computed sort order |
+| Query 1 — `"canada express entry draw"` | Hardcoded | `top_queries.query_text` |
+| Interest share bar — `100%`, `82%`, `65%`, `44%` | Hardcoded | `top_queries.relative_share` (normalized to max=100%) |
+| Queries 2–4 | Hardcoded | Same |
+
+### Section C — Rising Queries Table
+| Field | Current Mock | Data Source Needed |
+|---|---|---|
+| Query 1 — `"new student cap policy"` | Hardcoded | `rising_queries.query_text` |
+| Growth — `"+4,250%"` | Hardcoded | `rising_queries.growth_pct` |
+| Breakout badge (boolean) | Hardcoded `true/false` | `rising_queries.is_breakout` |
+| Queries 2–4 | Hardcoded | Same |
+
+### Section D — Answer Efficiency Bar Chart (12 months)
+| Field | Current Mock | Data Source Needed |
+|---|---|---|
+| Answered bar heights (Jan–Dec) | Hardcoded % values | `monthly_stats.answered_count` aggregated by month |
+| Unanswered bar heights (Jan–Dec) | Hardcoded % values | `monthly_stats.unanswered_count` |
+| Current month highlight (JUL) | Hardcoded | `current_month` — derived from `now()` |
+
+### Section E — Taxonomy Cluster Grid
+| Field | Current Mock | Data Source Needed |
+|---|---|---|
+| `"Work Permits"` — `1,242 signals` | Hardcoded | `subtopics.name`, `subtopics.signal_count` where `parent_topic_id = topic.id` |
+| All 11 cluster tiles | Hardcoded | Same — full subtopic list |
+
+---
+
+## 5. `/app/creators/[username]` — Creator Intelligence
+
+**File:** `src/app/app/creators/[username]/page.tsx`
+
+### Profile Card
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Avatar | First-letter `"T"` placeholder | `creators.avatar_url` → `<Image>` |
+| Display username | From URL `params.username` | Verified from `creators.username` lookup |
+| Verified badge | Hardcoded `true` | `creators.is_verified` |
+| Bio | Hardcoded paragraph | `creators.bio` |
+| Chip: `"POSTS: 876"` | Hardcoded | `creators.post_count` |
+| Chip: `"TRANSCRIBED: 412"` | Hardcoded | `creators.transcribed_count` |
+| Stat: Total Posts | `"876"` | `creators.post_count` |
+| Stat: Inquiries Generated | `"1,204"` | `creators.total_signals_generated` |
+| Stat: Avg Urgency | `"78"` | `creators.avg_urgency_score` |
+| Stat: Followers | `"42.5K"` | `creators.follower_count` |
+
+### Incumbency Score
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Score | `74` | `creators.incumbency_score` (0–100, computed algorithm) |
+| Ring color | `"#4ade80"` (green) | Derived from score tier (green ≥70, yellow 40–69, red <40) |
+| SVG ring fill amount | Computed from `74` | Same score |
+
+### Recent Demand Signals
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Signal 1 — thread label | `"Express Entry Thread"` | `signals.thread_name` or `signals.topic.name` |
+| Signal 1 — urgency score | `"89 Urgency"` | `signals.urgency_score` |
+| Signal 1 — quote text | Hardcoded comment excerpt | `signals.text` (raw comment from scraped platform) |
+| Signal 1 — border/badge colors | Hardcoded Tailwind classes | Derived from `signals.urgency_score` tier |
+| Signals 2 & 3 | Same pattern | Same fields |
+
+### Contributions Feed
+Each post card:
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Thumbnail | Gradient placeholder | `posts.thumbnail_url` |
+| Content type badge | `"Reel"` / `"Video"` | `posts.content_type` enum |
+| Posted timestamp | `"2 hours ago"` / `"Yesterday"` | `posts.published_at` (relative) |
+| Post title | Hardcoded string | `posts.title` |
+| Excerpt | Hardcoded string | `posts.excerpt` or `posts.caption` (truncated) |
+| Metric: comment count | `"142"` | `posts.comment_count` |
+| Metric: engagement % | `"84% Engagement"` | `posts.engagement_rate` |
+| Metric: critical inquiries | `"12 Critical Inquiries"` | `posts.high_urgency_signal_count` |
+| Month label | `"April 2026"` (hardcoded) | Derived from grouped post dates |
+
+---
+
+## 6. `/app/posts/[id]` — Post Intelligence
+
+**File:** `src/app/app/posts/[id]/page.tsx`
+
+### Video / Media Area
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Thumbnail | Gradient placeholder | `posts.thumbnail_url` → `<Image>` |
+| Video playback | Non-functional button | `posts.video_url` → embed or media player |
+| Content type badge | `"REEL"` hardcoded | `posts.content_type` |
+| External link | `instagram.com/p/{id}` | `posts.external_url` |
+
+### Creator Attribution Row
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Creator avatar | `"T"` letter placeholder | `creators.avatar_url` |
+| Creator username | `"@tncimmigration"` | `posts.creator.username` (joined from `creators` table) |
+| Verified badge | Hardcoded `true` | `creators.is_verified` |
+| Follower count | `"42.5K Followers"` | `creators.follower_count` |
+
+### Caption & Hashtags
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Caption text | Hardcoded paragraph | `posts.caption` |
+| Hashtag 1 — `#CanadaImmigration` | Hardcoded | `posts.hashtags[]` |
+| Hashtags 2–4 | Hardcoded | Same |
+
+### Stats Row (4 KPIs)
+| Stat | Current Mock | Data Source Needed |
+|---|---|---|
+| Views | `"6,968"` | `posts.view_count` |
+| Comments | `7` | `posts.comment_count` |
+| Likes | `102` | `posts.like_count` |
+| Duration | `"96s"` | `posts.duration_seconds` (formatted) |
+
+### Transcript Panel
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Timestamp `[00:01]` | Hardcoded | `transcripts.segments[].start_time` |
+| Segment text | Hardcoded | `transcripts.segments[].text` |
+| All 5 transcript segments | Hardcoded | Full `transcripts` row linked to `post_id` |
+
+### Tower's Read (AI Summary)
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| AI analysis paragraph | Hardcoded string | `posts.ai_summary` — LLM-generated insight stored at scrape/processing time |
+
+### Urgency Gauge (SVG ring)
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Score | `82` | `posts.urgency_score` (computed from signals) |
+| Label | `"Critical Urgency"` | Derived from score tier |
+| Signal count label | `"Based on 7 analyzed comments"` | `posts.analyzed_signal_count` |
+
+### Creator Score Bar
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Score | `74` | `creators.incumbency_score` (same creator as post) |
+| Bar fill width | `74%` | Same |
+
+### Demand Signals Panel
+Each signal card:
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| Timestamp | `"2m ago"` / `"15m ago"` / `"42m ago"` | `signals.created_at` (relative) |
+| Urgency label | `"High Urgency"` / `"Inquiry"` / `"Med Urgency"` | Derived from `signals.urgency_score` tier |
+| Status | `"Unanswered"` / `"Answered"` | `signals.status` enum |
+| Comment text | Hardcoded question quotes | `signals.text` (raw scraped comment) |
+| "Claim Inquiry" button | Disabled / non-functional | Action: assign `signals.claimed_by = current_user_id` |
+| Left border color | Tailwind class by tier | Derived from urgency tier |
+
+### Comment Velocity Bar Chart
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| 12 bar heights | Hardcoded `[20, 35, 25, 50, 45, 75, 100, 85, 60, 40, 20, 15]` | `signal_velocity.hourly_counts[]` — last 12 hours of signal arrival for this post |
+| `"+12% / hr"` trend label | Hardcoded | `posts.signal_velocity_pct_change` |
+
+### Footer Metadata
+| Element | Current Mock | Data Source Needed |
+|---|---|---|
+| "Next data refresh: in 4 hours 23 minutes" | Hardcoded | `posts.next_refresh_at - now()` (computed) |
+| "Last scraped: April 20, 10:53AM" | Hardcoded | `posts.last_scraped_at` |
+
+---
+
+## 7. Entity Summary & Suggested DB Tables
+
+| Table | Key Fields |
+|---|---|
+| `topics` | `id`, `slug`, `name`, `tags[]`, `platform`, `signal_count`, `unanswered_signals`, `urgency_score`, `avg_response_time_hours`, `top_platform`, `last_scraped_at`, `next_refresh_at`, `status` |
+| `subtopics` | `id`, `parent_topic_id`, `name`, `signal_count` |
+| `creators` | `id`, `username`, `display_name`, `avatar_url`, `bio`, `is_verified`, `follower_count`, `follower_growth_7d_pct`, `post_count`, `transcribed_count`, `avg_urgency_score`, `incumbency_score`, `total_signals_generated` |
+| `posts` | `id`, `creator_id`, `topic_id`, `title`, `caption`, `excerpt`, `hashtags[]`, `content_type` (enum: reel/video/image), `thumbnail_url`, `video_url`, `external_url`, `platform`, `published_at`, `view_count`, `like_count`, `comment_count`, `duration_seconds`, `engagement_rate`, `urgency_score`, `analyzed_signal_count`, `high_urgency_signal_count`, `signal_velocity_pct_change`, `last_scraped_at`, `next_refresh_at`, `ai_summary` |
+| `transcripts` | `id`, `post_id`, `segments` (JSONB: `[{start_time, text}]`) |
+| `signals` | `id`, `post_id`, `topic_id`, `creator_id`, `text`, `urgency_score`, `status` (enum: unanswered/answered/claimed), `claimed_by`, `platform`, `thread_name`, `created_at` |
+| `signal_velocity` | `id`, `post_id`, `recorded_at`, `count_per_hour` |
+| `popular_queries` | `id`, `topic_id`, `query_text`, `rate_per_hour`, `recorded_at` |
+| `rising_queries` | `id`, `topic_id`, `query_text`, `growth_pct`, `is_breakout`, `recorded_at` |
+| `monthly_stats` | `id`, `topic_id`, `year`, `month`, `answered_count`, `unanswered_count` |
+| `news_items` | `id`, `topic_id`, `headline`, `source`, `thumbnail_url`, `published_at`, `external_url` |
+| `users` | `id`, `email`, `display_name`, `avatar_url`, `role` |
+| `market_ticks` | `id`, `ticker_symbol`, `price`, `change_pct`, `recorded_at` |

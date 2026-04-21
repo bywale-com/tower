@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analyst Terminal | @tncimmigration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-bright": "#323949",
+                  "on-tertiary-fixed": "#0e1c2f",
+                  "secondary-fixed": "#dce2f3",
+                  "primary-fixed-dim": "#b4c5ff",
+                  "on-secondary-container": "#aeb5c5",
+                  "on-error": "#690005",
+                  "primary-container": "#1a52c7",
+                  "inverse-primary": "#2056cb",
+                  "surface-container-low": "#141b2b",
+                  "outline": "#8d909f",
+                  "primary": "#b4c5ff",
+                  "background": "#0c1322",
+                  "surface-container-high": "#232a3a",
+                  "surface-tint": "#b4c5ff",
+                  "surface-dim": "#0c1322",
+                  "primary-fixed": "#dbe1ff",
+                  "surface-variant": "#2e3545",
+                  "on-surface": "#dce2f7",
+                  "tertiary-fixed": "#d5e3fe",
+                  "on-tertiary": "#233145",
+                  "on-primary-container": "#c5d2ff",
+                  "tertiary": "#b9c7e1",
+                  "on-background": "#dce2f7",
+                  "on-secondary": "#2a313d",
+                  "error": "#ffb4ab",
+                  "secondary-container": "#404754",
+                  "tertiary-fixed-dim": "#b9c7e1",
+                  "on-primary-fixed": "#00174a",
+                  "on-primary": "#002a77",
+                  "surface-container-lowest": "#070e1d",
+                  "on-tertiary-container": "#c5d3ee",
+                  "on-surface-variant": "#c3c6d6",
+                  "on-secondary-fixed": "#151c27",
+                  "on-tertiary-fixed-variant": "#3a475d",
+                  "secondary": "#c0c7d6",
+                  "inverse-on-surface": "#293040",
+                  "tertiary-container": "#4e5b72",
+                  "secondary-fixed-dim": "#c0c7d6",
+                  "on-secondary-fixed-variant": "#404754",
+                  "outline-variant": "#434654",
+                  "surface-container-highest": "#2e3545",
+                  "inverse-surface": "#dce2f7",
+                  "surface-container": "#191f2f",
+                  "surface": "#0c1322",
+                  "error-container": "#93000a",
+                  "on-primary-fixed-variant": "#003ea7",
+                  "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "fontFamily": {
+                  "headline": ["Space Grotesk"],
+                  "body": ["Inter"],
+                  "label": ["Inter"],
+                  "mono": ["JetBrains Mono"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; background-color: #0c1322; color: #dce2f7; }
+    .font-headline { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .glass-nav { background: rgba(20, 27, 43, 0.8); backdrop-filter: blur(20px); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="flex bg-background min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-[240px] bg-[#070e1d] flex flex-col py-8 z-50">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+</div>
+<h1 class="text-lg font-black text-slate-100 font-headline tracking-tighter">Terminal v2.4</h1>
+</div>
+<p class="text-[10px] uppercase tracking-[0.2em] text-blue-500 font-bold">Market Pulse: Active</p>
+</div>
+<nav class="flex-1 flex flex-col">
+<a class="text-slate-500 hover:text-slate-300 py-3 px-6 flex items-center gap-3 transition-all font-headline text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span> Terminal
+      </a>
+<a class="text-slate-50 font-semibold bg-[#141b2b] border-l-2 border-blue-500 py-3 px-6 flex items-center gap-3 transition-all font-headline text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined text-blue-500" data-icon="query_stats">query_stats</span> Intelligence
+      </a>
+<a class="text-slate-500 hover:text-slate-300 py-3 px-6 flex items-center gap-3 transition-all font-headline text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span> Market Map
+      </a>
+<a class="text-slate-500 hover:text-slate-300 py-3 px-6 flex items-center gap-3 transition-all font-headline text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span> Portfolio
+      </a>
+<a class="text-slate-500 hover:text-slate-300 py-3 px-6 flex items-center gap-3 transition-all font-headline text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span> Analyst Network
+      </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full py-3 bg-primary-container text-on-primary-container rounded-lg font-bold text-sm hover:opacity-90 transition-opacity mb-6">
+        New Inquiry
+      </button>
+<div class="flex flex-col gap-1 border-t border-outline-variant/20 pt-4">
+<a class="text-slate-500 hover:text-slate-300 py-2 px-2 flex items-center gap-3 text-sm font-headline" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="account_circle">account_circle</span> Account
+        </a>
+<a class="text-slate-500 hover:text-slate-300 py-2 px-2 flex items-center gap-3 text-sm font-headline" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span> Logout
+        </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[240px]">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-40 bg-slate-900/70 backdrop-blur-xl flex justify-between items-center h-14 px-8">
+<div class="flex items-center gap-6">
+<span class="text-xl font-bold tracking-tighter text-slate-50 font-headline uppercase">Sovereign Intelligence</span>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm" data-icon="search">search</span>
+<input class="bg-slate-800/50 border-none rounded-full py-1.5 pl-10 pr-4 text-xs w-64 focus:ring-1 focus:ring-blue-500 transition-all text-slate-300" placeholder="Search Analyst Terminal..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:text-slate-200 transition-colors p-1 flex items-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-400 hover:text-slate-200 transition-colors p-1 flex items-center">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="text-slate-400 hover:text-slate-200 transition-colors p-1 flex items-center">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30 ml-2">
+<img alt="Analyst Profile" class="w-full h-full object-cover" data-alt="Close-up professional portrait of a tech analyst in a dark suit with soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyakPS5y6G9YfZnNpSN0UyjprsmUmIZAZgUGSXUNfbPg3ce1VosbsM_h2mAUZHRShqPL4nHwN30n9DzXX050I28wiZ6PV9ZFQjXiDh13t3PJ6YKOsV2TpfzoG7tHB9myr8mqqAokv9t_THslWv__LGYNv2fUAKnH_p9M5K4EVr-EbEvFJlF8zdTW3-B_DWi3IikniP41ZLQUXMkMQdTc2e8WX0cOPswKFJ4jZSx0jK1Lv1OBdoJrI1yUQj7RvNygkCOco5Nkm3hphI"/>
+</div>
+</div>
+</header>
+<!-- Creator Content Dashboard -->
+<div class="p-8 grid grid-cols-12 gap-8">
+<!-- Left Column: Profile & Metrics -->
+<section class="col-span-12 lg:col-span-5 space-y-8">
+<!-- Profile Summary -->
+<div class="bg-surface-container-low rounded-xl p-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-8xl" data-icon="badge">badge</span>
+</div>
+<div class="flex items-start gap-6 mb-6">
+<div class="w-20 h-20 rounded-full border-4 border-primary/20 p-1">
+<img alt="@tncimmigration Profile" class="w-full h-full object-cover rounded-full" data-alt="Professional headshot of a female immigration consultant with a warm, confident expression in an office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMhD8_2Nl4KQqykx2rQzVKlzy7EqwkXj0JGrS1IFiPk1lZdT_RfswzJmAD4juSCVTu9aIWb5qBFylou7wI88UXnj6d8L2jPQDdc0Hj5VvogGpuIp3QmTejLaRJNOCssP76Oa-nqqZ8Y7iqKd8B4toXDwdLsjirBylYZrriBnyEPclebEDrfrHCB-OzYVre6cPipmh9QoqF25jbAcMhsNnhiFsNEibmFOaIkniWEDWoI7cQdpIAo1vnNuZ1oo-mccEfb4DeqBooeuXE"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="text-2xl font-bold font-headline text-slate-50">@tncimmigration</h2>
+<span class="material-symbols-outlined text-blue-400 text-lg" data-icon="verified" data-weight="fill">verified</span>
+<span class="material-symbols-outlined text-slate-500 text-lg ml-1" data-icon="share">share</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-md line-clamp-3">
+                Specializing in Canadian economic immigration. Helping families navigate Express Entry, PNP, and Study Permits since 2014.
+              </p>
+</div>
+</div>
+<!-- Stat Chips -->
+<div class="flex gap-3 mb-8">
+<div class="px-3 py-1 bg-surface-container-high rounded text-[10px] font-mono font-medium text-slate-300 border border-outline-variant/10">
+              POSTS: 876
+            </div>
+<div class="px-3 py-1 bg-surface-container-high rounded text-[10px] font-mono font-medium text-slate-300 border border-outline-variant/10">
+              TRANSCRIBED: 412
+            </div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-background/40 p-4 rounded-lg">
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Total Posts</p>
+<p class="text-2xl font-mono font-bold text-slate-100">876</p>
+</div>
+<div class="bg-background/40 p-4 rounded-lg">
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Inquiries Generated</p>
+<p class="text-2xl font-mono font-bold text-slate-100">1,204</p>
+</div>
+<div class="bg-background/40 p-4 rounded-lg">
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Avg Urgency</p>
+<p class="text-2xl font-mono font-bold text-error">78</p>
+</div>
+<div class="bg-background/40 p-4 rounded-lg">
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Followers</p>
+<p class="text-2xl font-mono font-bold text-slate-100">42.5K</p>
+</div>
+</div>
+</div>
+<!-- Incumbency Score Section -->
+<div class="bg-surface-container-low rounded-xl p-8 flex items-center justify-between">
+<div class="border-l-4 border-primary pl-6">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-sm font-bold text-slate-500 uppercase tracking-widest font-headline">Incumbency Score</span>
+<span class="material-symbols-outlined text-slate-500 text-sm cursor-help" data-icon="info">info</span>
+</div>
+<div class="text-5xl font-black font-headline text-[#4ade80]">74/100</div>
+</div>
+<div class="w-24 h-24 relative">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-highest" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-[#4ade80]" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="65.3" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl text-[#4ade80]" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Recent Demand Signals -->
+<div class="space-y-4">
+<div class="flex justify-between items-center px-1">
+<h3 class="font-headline font-bold text-slate-200 text-lg">Recent Demand Signals</h3>
+<span class="text-[10px] text-primary uppercase font-bold tracking-tighter">Live Stream</span>
+</div>
+<div class="space-y-3">
+<!-- Signal Card 1 -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-start gap-4 transition-all hover:bg-surface-container-high border-l-2 border-error">
+<div class="flex-1">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Express Entry Thread</span>
+<div class="px-2 py-0.5 bg-error-container text-on-error-container rounded text-[10px] font-bold">89 Urgency</div>
+</div>
+<p class="text-xs text-slate-300 leading-relaxed italic">"My PGWP expires in 3 weeks, CRS is 492. Any hope for a category-based draw soon? Extremely anxious..."</p>
+</div>
+</div>
+<!-- Signal Card 2 -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-start gap-4 transition-all hover:bg-surface-container-high border-l-2 border-[#fb923c]">
+<div class="flex-1">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">PNP Updates</span>
+<div class="px-2 py-0.5 bg-[#452d1c] text-[#fb923c] rounded text-[10px] font-bold">72 Urgency</div>
+</div>
+<p class="text-xs text-slate-300 leading-relaxed italic">"Applied for OINP 6 months ago, still no update. Is it normal to wait this long for a nomination?"</p>
+</div>
+</div>
+<!-- Signal Card 3 -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-start gap-4 transition-all hover:bg-surface-container-high border-l-2 border-error">
+<div class="flex-1">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Study Permit Hub</span>
+<div class="px-2 py-0.5 bg-error-container text-on-error-container rounded text-[10px] font-bold">94 Urgency</div>
+</div>
+<p class="text-xs text-slate-300 leading-relaxed italic">"Visa rejected twice already. Need a detailed SOP review before my final attempt. Please DM back!"</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Contributions Feed -->
+<section class="col-span-12 lg:col-span-7">
+<div class="bg-surface-container-low rounded-xl min-h-[800px] flex flex-col">
+<!-- Header -->
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<div>
+<h3 class="font-headline font-bold text-xl text-slate-50 tracking-tight">@tncimmigration's Contributions</h3>
+<p class="text-xs text-slate-500 mt-0.5">Analytic processing of published assets</p>
+</div>
+<a class="text-xs font-bold text-blue-400 hover:underline flex items-center gap-1 uppercase tracking-wider" href="#">
+              All Contributions <span class="material-symbols-outlined text-sm" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+<!-- Date Label -->
+<div class="px-6 py-4 bg-background/30 flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm font-headline font-bold text-slate-300 uppercase tracking-widest">April 2026</span>
+</div>
+<!-- Scrollable Feed -->
+<div class="flex-1 overflow-y-auto no-scrollbar p-6 space-y-6">
+<!-- Post Card 1 -->
+<div class="group grid grid-cols-12 gap-6 bg-surface-container-high/40 p-4 rounded-lg transition-all hover:bg-surface-container-high cursor-pointer">
+<div class="col-span-3 aspect-[9/16] rounded-md bg-slate-800 overflow-hidden relative">
+<img alt="Video Thumbnail" class="w-full h-full object-cover" data-alt="Vertical mobile video frame showing a woman speaking directly to camera about immigration laws in a modern office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7Q7_eMRmbPwXuTBCOVbxpIGvICZOOOitNn8AAdCyAOcL3Ab4AGG3Td9WXFY5e3a6MpcEDr8F61hsjvW2cY1vN2CHpgvLY7OBFlh83ojSNotYGCKjIiAPSf9x-al-unUKOFL4siwOEZIzUQ0S3P2AkwtFBIAKwD30OYC1yUktx4rGPq_xTX9V_QcvWXmOaZ5yhe2n4_6EtxHz17XPxExevtzSeGDnHY4oTDMuzMKHxZB5xUGjdCho5byCcdWaDvlmkIR6F6itYW_b8"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-4xl" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+<div class="col-span-9 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded uppercase tracking-tighter">Reel</span>
+<span class="text-[10px] font-mono text-slate-500">2 hours ago</span>
+</div>
+<h4 class="text-slate-100 font-bold mb-2 line-clamp-2">New Category-Based Draws Announced: What French speakers need to know for the upcoming week...</h4>
+<p class="text-xs text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  IRCC just released the numbers for the latest STEM and French language proficiency draws. The CRS cutoff is significantly lower than general draws. If you have a CLB 7...
+                </p>
+<div class="mt-auto flex items-center gap-4 border-t border-outline-variant/10 pt-4">
+<div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="comment">comment</span> 142
+                  </div>
+<div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="assessment">assessment</span> 84% Engagement
+                  </div>
+<div class="flex items-center gap-1 text-[10px] font-mono text-error">
+<span class="material-symbols-outlined text-sm" data-icon="error">error</span> 12 Critical Inquiries
+                  </div>
+</div>
+</div>
+</div>
+<!-- Post Card 2 -->
+<div class="group grid grid-cols-12 gap-6 bg-surface-container-high/40 p-4 rounded-lg transition-all hover:bg-surface-container-high cursor-pointer">
+<div class="col-span-3 aspect-[9/16] rounded-md bg-slate-800 overflow-hidden relative">
+<img alt="Video Thumbnail" class="w-full h-full object-cover opacity-80" data-alt="Vertical mobile video frame showing a desk with official looking immigration documents and a passport" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYM9bIFxg98ZnBfevjDLm85Et6WyRWdV5jCm89eoK2T4acSH_f-wqCwqx8FhwdvUo-05X1uMnGw2vTe1SWhHa_lL4zEugod-wNS3m0goBnU1uQLqP6j7TXVz2LoMlvwaIDwIdXWINrzziRcl5_HRHC6VshRchcBR0tDFKIMj9C0oNqBHsDI-Ha7McN0lvlJ2qer5X_mktXMATUHjIwNbAx6wlgYTHGHSP1Xik_qLGcNVX62BmLSKfgeXcIF_hauxnHwos2c0VkoZQt"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-4xl" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+<div class="col-span-9 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded uppercase tracking-tighter">Video</span>
+<span class="text-[10px] font-mono text-slate-500">Yesterday</span>
+</div>
+<h4 class="text-slate-100 font-bold mb-2 line-clamp-2">Complete Guide to BC PNP: International Post-Graduate Category requirements for 2026.</h4>
+<p class="text-xs text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Navigating the British Columbia Provincial Nominee Program can be tricky for new graduates. Today we break down the scoring system and the priority list for tech...
+                </p>
+<div class="mt-auto flex items-center gap-4 border-t border-outline-variant/10 pt-4">
+<div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="comment">comment</span> 89
+                  </div>
+<div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="assessment">assessment</span> 76% Engagement
+                  </div>
+<div class="flex items-center gap-1 text-[10px] font-mono text-[#fb923c]">
+<span class="material-symbols-outlined text-sm" data-icon="priority_high">priority_high</span> 4 High Value Leads
+                  </div>
+</div>
+</div>
+</div>
+<!-- Post Card 3 -->
+<div class="group grid grid-cols-12 gap-6 bg-surface-container-high/40 p-4 rounded-lg transition-all hover:bg-surface-container-high cursor-pointer">
+<div class="col-span-3 aspect-[9/16] rounded-md bg-slate-800 overflow-hidden relative">
+<img alt="Video Thumbnail" class="w-full h-full object-cover" data-alt="Close-up of a person's hands typing on a laptop with data charts visible on the screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAudlDc0S6wVpqc_Zy8ey8rDIL_CwHDL3oQn9j9DkuFrpnv5wMIhqGISsDuhsTrixK8LAKn23s9MMIorCdQtKMAR8tiSDKgYq1dLr1pPFr8Adszk90ne6gsZzRGORoMJwJsHTLnfRHus9kxyy9_gyuHIwY7KFci1QjRH6ZQ-88T5c6Rk63NpUUyjytUj1XCt8LFDOneWLNn7F9TAbBf6NxreoJnPu-AXeVi1z8PyN3rWvOhFCfwBtFG1djBYhP_EQm-moAIn40CJI--"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-4xl" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+<div class="col-span-9 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded uppercase tracking-tighter">Reel</span>
+<span class="text-[10px] font-mono text-slate-500">3 days ago</span>
+</div>
+<h4 class="text-slate-100 font-bold mb-2 line-clamp-2">Avoid these 5 common mistakes in your Express Entry profile to prevent rejection.</h4>
+<p class="text-xs text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">
+                  Mistakes in NOC coding or employment letters are the primary reason for profile rejection after receiving an ITA. We show you exactly how to format your...
+                </p>
+<div class="mt-auto flex items-center gap-4 border-t border-outline-variant/10 pt-4">
+<div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="comment">comment</span> 204
+                  </div>
+<div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="assessment">assessment</span> 91% Engagement
+                  </div>
+<div class="flex items-center gap-1 text-[10px] font-mono text-error">
+<span class="material-symbols-outlined text-sm" data-icon="error">error</span> 21 Urgent Clarifications
+                  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

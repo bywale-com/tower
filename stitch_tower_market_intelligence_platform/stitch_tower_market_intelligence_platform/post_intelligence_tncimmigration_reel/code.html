@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tower Intelligence | @tncimmigration Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Space_Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains_Mono', monospace; }
+        .font-brand { font-family: 'DM Sans', sans-serif; }
+        
+        .glass-panel {
+            background: rgba(20, 27, 43, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Tonal Stacking per Design System */
+        .surface-base { background-color: #0c1322; }
+        .surface-low { background-color: #141b2b; }
+        .surface-lowest { background-color: #070e1d; }
+        .surface-highest { background-color: #2e3545; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #434654; border-radius: 10px; }
+        
+        .intent-bar { position: relative; }
+        .intent-bar::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #b4c5ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#2e3545",
+                        "inverse-surface": "#dce2f7",
+                        "surface-container": "#191f2f",
+                        "surface": "#0c1322",
+                        "secondary-fixed-dim": "#c0c7d6",
+                        "on-secondary-fixed-variant": "#404754",
+                        "outline-variant": "#434654",
+                        "on-primary-fixed-variant": "#003ea7",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-secondary": "#2a313d",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#404754",
+                        "tertiary-fixed-dim": "#b9c7e1",
+                        "on-primary-fixed": "#00174a",
+                        "on-primary": "#002a77",
+                        "on-background": "#dce2f7",
+                        "inverse-on-surface": "#293040",
+                        "tertiary-container": "#4e5b72",
+                        "surface-container-lowest": "#070e1d",
+                        "on-tertiary-container": "#c5d3ee",
+                        "on-surface-variant": "#c3c6d6",
+                        "on-secondary-fixed": "#151c27",
+                        "on-tertiary-fixed-variant": "#3a475d",
+                        "secondary": "#c0c7d6",
+                        "background": "#0c1322",
+                        "surface-container-low": "#141b2b",
+                        "outline": "#8d909f",
+                        "primary": "#b4c5ff",
+                        "tertiary-fixed": "#d5e3fe",
+                        "on-tertiary": "#233145",
+                        "on-primary-container": "#c5d2ff",
+                        "tertiary": "#b9c7e1",
+                        "surface-container-high": "#232a3a",
+                        "surface-tint": "#b4c5ff",
+                        "surface-dim": "#0c1322",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-variant": "#2e3545",
+                        "on-surface": "#dce2f7",
+                        "on-tertiary-fixed": "#0e1c2f",
+                        "secondary-fixed": "#dce2f3",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-bright": "#323949",
+                        "on-error": "#690005",
+                        "primary-container": "#1a52c7",
+                        "inverse-primary": "#2056cb",
+                        "on-secondary-container": "#aeb5c5"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary/30">
+<!-- Sidebar Shell -->
+<aside class="fixed left-0 top-0 h-screen w-60 border-r border-primary/15 bg-surface-container-lowest flex flex-col py-6 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-xl font-headline font-bold text-primary tracking-tighter">The Sovereign</h1>
+<p class="text-[10px] font-mono uppercase tracking-[0.2em] text-outline opacity-70">Institutional Grade</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<div class="group flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-300 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-lg">analytics</span>
+<span class="font-headline text-sm">Intelligence</span>
+</div>
+<div class="group flex items-center px-4 py-2.5 text-primary border-l-2 border-primary bg-surface-container-low transition-all duration-200 ease-in-out rounded-r-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-lg">insights</span>
+<span class="font-headline text-sm">Market Pulse</span>
+</div>
+<div class="group flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-300 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-lg">person_search</span>
+<span class="font-headline text-sm">Creator Index</span>
+</div>
+<div class="group flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-300 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-lg">sensors</span>
+<span class="font-headline text-sm">Signals</span>
+</div>
+<div class="group flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-300 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-lg">inventory_2</span>
+<span class="font-headline text-sm">Archives</span>
+</div>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full py-3 bg-primary-container text-on-primary-container font-headline font-bold text-xs uppercase tracking-widest rounded-sm flex items-center justify-center gap-2 hover:bg-primary-container/80 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Analysis
+            </button>
+<div class="mt-6 space-y-1">
+<div class="flex items-center px-4 py-2 text-slate-500 hover:text-slate-300 transition-colors text-xs font-headline cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-base">settings</span>
+                    Settings
+                </div>
+<div class="flex items-center px-4 py-2 text-slate-500 hover:text-slate-300 transition-colors text-xs font-headline cursor-pointer">
+<span class="material-symbols-outlined mr-3 text-base">contact_support</span>
+                    Support
+                </div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation -->
+<header class="fixed top-0 left-60 right-0 h-14 bg-surface-container-low/70 backdrop-blur-xl border-b border-primary/10 flex justify-between items-center px-8 z-40">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-primary font-headline">Tower</span>
+<div class="flex gap-6">
+<a class="text-slate-400 font-mono uppercase text-xs tracking-widest hover:text-white transition-colors" href="#">Dashboard</a>
+<a class="text-primary font-bold font-mono uppercase text-xs tracking-widest border-b-2 border-primary" href="#">Real-time</a>
+<a class="text-slate-400 font-mono uppercase text-xs tracking-widest hover:text-white transition-colors" href="#">Alerts</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-4 py-1.5 border border-primary/20 text-primary font-mono text-[10px] uppercase tracking-widest hover:bg-primary/5 transition-all">
+                Export Report
+            </button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">notifications_active</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">account_circle</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-60 pt-14 min-h-screen bg-surface">
+<div class="p-8 max-w-[1400px] mx-auto grid grid-cols-12 gap-8">
+<!-- Left Column: Content & Creator Intelligence -->
+<section class="col-span-12 lg:col-span-7 space-y-8">
+<!-- Video Thumbnail Area -->
+<div class="relative group rounded-xl overflow-hidden bg-surface-container-low shadow-2xl">
+<img alt="Canadian Immigration Reel" class="w-full aspect-video object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Modern tech office with holographic data overlay representing immigration flows and global connectivity, cinematic lighting, cool blue tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD0t0NaRGiLUw6X0GsM3P125Ztipf0ilCBe9npkAMxHJlkNc2yAQfbFCAK3ouXn7aeCDsr2EEdBJV0KikM2GSLVCtYv5jQvx-bQs8z-KFD3m5JEB7l88TCOcZlkenBStTS_kOYM4ahRFYkIUhFkR1-6Jn-hc8LML8vrRRx3ItCGaYWSLcDWG_NgKQU0bOwioVIioPdo6XAxqHY9qw1gRurrcn-DZJMgYt4eRqarNx_ylI6RGaoHKlAHZn7Rym-bHdo-j18dhLIv-nS"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="w-16 h-16 bg-primary/90 text-on-primary rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined scale-150" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="px-3 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-white font-mono text-[10px] font-bold tracking-widest rounded-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">movie</span> REEL
+                        </span>
+</div>
+</div>
+<!-- Caption & Details -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="@tncimmigration Profile" class="w-8 h-8 rounded-full object-cover border border-primary/30" data-alt="Professional headshot of a female immigration consultant, minimalist background, corporate editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABF8ObwIHj-Cpd4DXs1cMAINsMVAplltvttrhqPCLBBbIdHIAzPUaBsib6kJgMausJNTVZWCDVGqrDY1WotVXEDp0BQQhjJJbcbKs9UGKU8gziV6W0nMJB_gC20XAybx4-d7o6do8vFvZRcinm8LsZdBTdMjLJUcFVkjx1t4kaDUGcTnYhHpGuBvI9fUwLEdjQtJ9wCshPsNcInjMeuicoXM79M3a-_kZ0cYh6LoAB6CYalRxf_he9GwAyyuz5rroZZoJBgWmbCz0B"/>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline font-bold text-on-surface">@tncimmigration</span>
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="text-[10px] font-mono text-outline uppercase tracking-wider">42.5K Followers</span>
+</div>
+</div>
+<a class="flex items-center gap-2 text-outline hover:text-primary transition-colors font-mono text-xs" href="#">
+<span class="material-symbols-outlined text-sm">link</span>
+                            instagram.com/p/reel_id
+                        </a>
+</div>
+<div class="surface-low p-6 rounded-xl space-y-4">
+<p class="text-on-surface leading-relaxed font-body text-sm">
+                            Everything you need to know about the new 2024 Canadian Immigration targets. The policy shifts are massive—here's how you can still qualify despite the points hike. We're breaking down the Express Entry changes, provincial nominations, and the new work permit rules for students. Don't miss these critical updates if you're planning your move this year.
+                        </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-surface-container-highest text-primary font-mono text-[10px] rounded cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">#CanadaImmigration</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-primary font-mono text-[10px] rounded cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">#ExpressEntry</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-primary font-mono text-[10px] rounded cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">#VisaAdvice</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-primary font-mono text-[10px] rounded cursor-pointer hover:bg-primary hover:text-on-primary transition-colors">#PRStatus</span>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-4 gap-4">
+<div class="surface-low p-4 rounded-xl flex flex-col gap-1 border-b border-primary/5">
+<span class="text-outline text-[10px] font-mono uppercase tracking-widest">Views</span>
+<span class="text-xl font-headline font-bold font-mono">6,968</span>
+</div>
+<div class="surface-low p-4 rounded-xl flex flex-col gap-1 border-b border-primary/5">
+<span class="text-outline text-[10px] font-mono uppercase tracking-widest">Comments</span>
+<span class="text-xl font-headline font-bold font-mono">7</span>
+</div>
+<div class="surface-low p-4 rounded-xl flex flex-col gap-1 border-b border-primary/5">
+<span class="text-outline text-[10px] font-mono uppercase tracking-widest">Likes</span>
+<span class="text-xl font-headline font-bold font-mono">102</span>
+</div>
+<div class="surface-low p-4 rounded-xl flex flex-col gap-1 border-b border-primary/5">
+<span class="text-outline text-[10px] font-mono uppercase tracking-widest">Duration</span>
+<span class="text-xl font-headline font-bold font-mono">96s</span>
+</div>
+</div>
+<!-- Transcript & LLM Analysis -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">segment</span> Transcript
+                                </h3>
+<span class="px-2 py-0.5 bg-surface-container-highest text-outline font-mono text-[9px] uppercase tracking-wider rounded">Auto-generated</span>
+</div>
+<div class="h-48 overflow-y-auto surface-low p-4 rounded-xl border-l-2 border-primary/20">
+<p class="text-on-surface-variant font-body text-xs leading-relaxed">
+                                    [00:01] Hello everyone, welcome back. Today we are talking about the massive 2024 updates in Canadian immigration. <br/><br/>
+                                    [00:15] The government has released new targets, and there's a heavy emphasis on healthcare and tech workers. <br/><br/>
+                                    [00:30] If your CRS score is below 500, you might be worried, but let's look at the Category-Based selection. <br/><br/>
+                                    [00:45] We're seeing a trend toward high-demand sectors specifically in French-speaking proficiency. <br/><br/>
+                                    [01:05] Make sure to check the PNPs as well. Many provinces are launching independent streams that bypass the general Express Entry draws.
+                                </p>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="font-headline font-semibold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">psychology</span> Tower's Read
+                            </h3>
+<div class="h-48 bg-primary/10 p-5 rounded-xl border border-primary/20 flex flex-col justify-center">
+<p class="text-primary font-body text-sm leading-relaxed italic">
+                                    "This content is driving high intent specifically around category-based draws. The creator's authority on PNP pathways is prompting specific user inquiries about regional eligibility, signaling a potential consulting lead surge."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Signals & Urgency -->
+<section class="col-span-12 lg:col-span-5 space-y-8">
+<!-- Urgency Score Card -->
+<div class="surface-low p-8 rounded-xl relative overflow-hidden flex flex-col items-center justify-center text-center">
+<div class="absolute top-0 right-0 p-3">
+<span class="material-symbols-outlined text-error/30 scale-150">priority_high</span>
+</div>
+<div class="relative mb-4">
+<svg class="w-40 h-40 transform -rotate-90">
+<circle class="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-error" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="79.2" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-4xl font-headline font-bold text-on-surface font-mono">82</span>
+<span class="text-[10px] font-mono text-outline uppercase tracking-widest">/ 100</span>
+</div>
+</div>
+<h2 class="text-lg font-headline font-bold text-on-surface">Critical Urgency</h2>
+<p class="text-xs font-mono text-outline mt-1 uppercase tracking-widest">Based on 7 analyzed comments</p>
+<div class="mt-6 w-full pt-6 border-t border-primary/10 flex justify-between items-center px-4">
+<span class="text-xs font-headline text-on-surface-variant">Creator Score</span>
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-24 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 74%;"></div>
+</div>
+<span class="font-mono text-sm font-bold text-primary">74</span>
+</div>
+</div>
+</div>
+<!-- Demand Signals Panel -->
+<div class="surface-low rounded-xl overflow-hidden flex flex-col border border-primary/5">
+<div class="p-6 bg-surface-container-high/50 flex justify-between items-center">
+<div>
+<h3 class="font-headline font-bold text-on-surface">Demand Signals</h3>
+<p class="text-[10px] font-mono text-primary uppercase tracking-widest">7 inquiries detected</p>
+</div>
+<span class="material-symbols-outlined text-primary">sensors</span>
+</div>
+<div class="max-h-[500px] overflow-y-auto p-4 space-y-4">
+<!-- Comment Card 1 -->
+<div class="bg-surface-container-highest/40 p-4 rounded-lg border-l-2 border-error intent-bar transition-all hover:bg-surface-container-highest/60">
+<div class="flex justify-between items-start mb-3">
+<span class="text-[10px] font-mono text-outline">2m ago</span>
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-error/20 text-error text-[9px] font-bold uppercase tracking-wider rounded-sm">High Urgency</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wider rounded-sm">Unanswered</span>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed italic mb-4">
+                                "My post-grad work permit is expiring in 30 days and my score is 485. What are my options for a PNP right now? Please help!!"
+                            </p>
+<button class="w-full py-2 bg-outline/10 text-outline font-mono text-[10px] uppercase tracking-widest rounded-sm cursor-not-allowed">
+                                Claim Inquiry
+                            </button>
+</div>
+<!-- Comment Card 2 -->
+<div class="bg-surface-container-highest/40 p-4 rounded-lg border-l-2 border-primary/40 intent-bar transition-all hover:bg-surface-container-highest/60">
+<div class="flex justify-between items-start mb-3">
+<span class="text-[10px] font-mono text-outline">15m ago</span>
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-primary/20 text-on-primary-container text-[9px] font-bold uppercase tracking-wider rounded-sm">Inquiry</span>
+<span class="px-2 py-0.5 bg-outline/20 text-outline text-[9px] font-bold uppercase tracking-wider rounded-sm">Answered</span>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed italic mb-4">
+                                "Is the French proficiency test mandatory for the category-based draws or just an advantage?"
+                            </p>
+<button class="w-full py-2 bg-outline/10 text-outline font-mono text-[10px] uppercase tracking-widest rounded-sm cursor-not-allowed">
+                                Claim Inquiry
+                            </button>
+</div>
+<!-- Comment Card 3 -->
+<div class="bg-surface-container-highest/40 p-4 rounded-lg border-l-2 border-error/50 intent-bar transition-all hover:bg-surface-container-highest/60">
+<div class="flex justify-between items-start mb-3">
+<span class="text-[10px] font-mono text-outline">42m ago</span>
+<div class="flex gap-2">
+<span class="px-2 py-0.5 bg-error/15 text-error text-[9px] font-bold uppercase tracking-wider rounded-sm">Med Urgency</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wider rounded-sm">Unanswered</span>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed italic mb-4">
+                                "Can I apply for the healthcare stream if I'm currently working as a technician but my degree is in nursing?"
+                            </p>
+<button class="w-full py-2 bg-outline/10 text-outline font-mono text-[10px] uppercase tracking-widest rounded-sm cursor-not-allowed">
+                                Claim Inquiry
+                            </button>
+</div>
+</div>
+</div>
+<!-- Comment Velocity Mini-Chart -->
+<div class="surface-low p-6 rounded-xl space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-mono text-outline uppercase tracking-widest">Comment Velocity</span>
+<span class="text-xs font-mono text-error font-bold">+12% / hr</span>
+</div>
+<div class="h-16 flex items-end gap-1 px-2">
+<div class="w-full bg-primary/10 h-[20%] rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-[35%] rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-[25%] rounded-t-sm"></div>
+<div class="w-full bg-primary/40 h-[50%] rounded-t-sm"></div>
+<div class="w-full bg-primary/60 h-[45%] rounded-t-sm"></div>
+<div class="w-full bg-primary/80 h-[75%] rounded-t-sm"></div>
+<div class="w-full bg-primary h-[100%] rounded-t-sm"></div>
+<div class="w-full bg-primary/90 h-[85%] rounded-t-sm"></div>
+<div class="w-full bg-primary/70 h-[60%] rounded-t-sm"></div>
+<div class="w-full bg-primary/50 h-[40%] rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-[20%] rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-[15%] rounded-t-sm"></div>
+</div>
+</div>
+<!-- Footer Metadata -->
+<div class="pt-4 space-y-2">
+<div class="flex items-center gap-2 text-[10px] font-mono text-outline uppercase tracking-widest">
+<span class="material-symbols-outlined text-xs">update</span>
+                        Next data refresh: <span class="text-on-surface ml-1">in 4 hours 23 minutes</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-mono text-outline uppercase tracking-widest">
+<span class="material-symbols-outlined text-xs">history</span>
+                        Last scraped: <span class="text-on-surface ml-1">April 20, 10:53AM</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

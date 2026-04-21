@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tower | Canada Immigration Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#404754",
+                        "tertiary-fixed": "#d5e3fe",
+                        "surface": "#0c1322",
+                        "secondary": "#c0c7d6",
+                        "primary": "#b4c5ff",
+                        "primary-container": "#1a52c7",
+                        "surface-container-lowest": "#070e1d",
+                        "surface-container-low": "#141b2b",
+                        "surface-container": "#191f2f",
+                        "surface-container-high": "#232a3a",
+                        "surface-container-highest": "#2e3545",
+                        "on-background": "#dce2f7",
+                        "on-surface": "#dce2f7",
+                        "on-surface-variant": "#c3c6d6",
+                        "outline": "#8d909f",
+                        "outline-variant": "#434654",
+                        "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-background font-body selection:bg-primary/30">
+<!-- SideNavBar (Shared Component JSON Implementation) -->
+<aside class="fixed left-0 top-0 h-full w-[240px] z-50 bg-[#070e1d] shadow-[1px_0_0_0_rgba(255,255,255,0.05)] flex flex-col h-screen p-4 overflow-y-auto">
+<div class="mb-8 px-2">
+<h1 class="text-2xl font-black tracking-tighter text-[#b4c5ff] font-headline">Tower</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-mono">Market Intelligence</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:text-slate-200 transition-colors duration-200 hover:bg-[#141b2b] rounded-sm font-headline font-medium text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-[#b4c5ff] font-bold border-l-2 border-[#b4c5ff] bg-gradient-to-r from-[#1A52C7]/20 to-transparent font-headline text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg">insights</span> Intelligence
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:text-slate-200 transition-colors duration-200 hover:bg-[#141b2b] rounded-sm font-headline font-medium text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg">query_stats</span> Market Pulse
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:text-slate-200 transition-colors duration-200 hover:bg-[#141b2b] rounded-sm font-headline font-medium text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg">notification_important</span> Signals
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:text-slate-200 transition-colors duration-200 hover:bg-[#141b2b] rounded-sm font-headline font-medium text-sm tracking-tight" href="#">
+<span class="material-symbols-outlined text-lg">settings</span> Settings
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5">
+<button class="w-full bg-[#1A52C7] text-white py-2.5 rounded-sm font-headline font-bold text-xs uppercase tracking-widest active:scale-95 duration-100 transition-transform">
+                Run New Query
+            </button>
+</div>
+</aside>
+<!-- TopNavBar (Shared Component JSON Implementation) -->
+<header class="sticky top-0 w-full h-[56px] z-40 bg-[#141b2b]/70 backdrop-blur-[20px] shadow-2xl shadow-black/40">
+<div class="flex items-center justify-between px-8 w-full max-w-[1440px] mx-auto ml-[240px] h-full">
+<div class="flex items-center gap-8">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="bg-white/5 border-none text-[12px] font-mono w-64 pl-10 focus:ring-1 focus:ring-primary/50 transition-all rounded-sm" placeholder="Search Intelligence..." type="text"/>
+</div>
+<nav class="hidden lg:flex items-center gap-6">
+<a class="font-mono text-[12px] uppercase tracking-widest text-[#b4c5ff] border-b-2 border-[#b4c5ff] pb-1" href="#">Location</a>
+<a class="font-mono text-[12px] uppercase tracking-widest text-slate-400 hover:text-white transition-all" href="#">Timeframe</a>
+<a class="font-mono text-[12px] uppercase tracking-widest text-slate-400 hover:text-white transition-all" href="#">Platform</a>
+<a class="font-mono text-[12px] uppercase tracking-widest text-slate-400 hover:text-white transition-all" href="#">Segments</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-white">filter_list</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-white">download</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-white">more_vert</span>
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 ml-2 overflow-hidden">
+<img alt="User" data-alt="Stylized 3D avatar profile picture of a professional analyst with short dark hair and a focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpt_KWC7KMuq7oEPkbut6nJk9iZ8Aqj8WEP2yCf1UtNorJIjCeFmn-J_hezPRYiWgPyWX3KzL_kR3fJT_kiI55La76wzTh5M0tV7sWNSXOgE6f8I9N-Zr09wGxr8nBqQnOEaDOx_-lzChr8jbRJLZqrkR4ayQ68KpNhF6WQcN6Xq7OWacsJvK9MaBejF05gwmblIDdPTmZFKxYMpUs1gIuQ3nmlw-FJfy6ElR8oEcTNQCT1d0XTEZT3hvPeAX4crvtevL5Pq0_j1oZ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[240px] p-8 max-w-[1440px]">
+<!-- Topic Header Section -->
+<section class="grid grid-cols-12 gap-6 mb-12">
+<div class="col-span-12 lg:col-span-8">
+<div class="flex items-start justify-between mb-4">
+<div>
+<h2 class="text-5xl font-black font-headline text-on-surface tracking-tight mb-2">Canada Immigration</h2>
+<div class="flex items-center gap-4">
+<span class="text-primary font-mono text-lg font-medium">3,847 demand signals</span>
+<span class="h-1 w-1 rounded-full bg-outline"></span>
+<span class="text-on-surface-variant font-body text-sm">Last updated: 4m ago</span>
+</div>
+</div>
+<button class="px-6 py-2 border border-outline hover:bg-white/5 text-xs font-mono tracking-widest uppercase transition-all rounded-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">notifications</span> Set Alert
+                    </button>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-4 gap-4 mt-8">
+<div class="bg-surface-container-low p-4 rounded-xl relative overflow-hidden group">
+<div class="absolute left-0 top-0 w-1 h-full bg-primary/40"></div>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label mb-1">Total Questions</p>
+<p class="text-2xl font-mono text-primary font-medium">12,402</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl relative">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label mb-1">Unanswered</p>
+<p class="text-2xl font-mono text-error font-medium">1,284</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl relative">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label mb-1">Avg Response</p>
+<p class="text-2xl font-mono text-on-surface font-medium">2.4h</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl relative">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label mb-1">Top Platform</p>
+<p class="text-2xl font-mono text-[#FF4500] font-medium uppercase">Reddit</p>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<!-- Urgency Gauge -->
+<div class="bg-surface-container-low p-6 rounded-xl flex items-center justify-between shadow-lg border border-white/5">
+<div class="relative w-24 h-24">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-highest" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-yellow-500" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="77.8" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-mono font-bold">69</span>
+<span class="text-[8px] font-mono uppercase tracking-tighter">/ 100</span>
+</div>
+</div>
+<div class="flex-1 ml-6">
+<h4 class="text-sm font-headline font-bold text-on-surface mb-1">Volatility Alert</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">Urgency is driving this topic. Regulatory shifts predicted in Q4.</p>
+</div>
+</div>
+<!-- News Ticker -->
+<div class="bg-surface-container-highest/40 backdrop-blur-sm p-4 rounded-xl space-y-3">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="flex-shrink-0 text-[10px] font-mono text-primary-container px-1.5 bg-primary/20 border border-primary/20 rounded-sm">09:12</span>
+<p class="text-[11px] truncate text-on-surface/80">IRCC announces new caps on study permits for 2024...</p>
+</div>
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="flex-shrink-0 text-[10px] font-mono text-primary-container px-1.5 bg-primary/20 border border-primary/20 rounded-sm">08:45</span>
+<p class="text-[11px] truncate text-on-surface/80">Ontario PnP portal experiencing high traffic volumes...</p>
+</div>
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="flex-shrink-0 text-[10px] font-mono text-primary-container px-1.5 bg-primary/20 border border-primary/20 rounded-sm">07:30</span>
+<p class="text-[11px] truncate text-on-surface/80">Express Entry draw #284 CRS cutoff rises to 541...</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section A: Content & Creator Ecosystem -->
+<section class="grid grid-cols-12 gap-6 mb-12">
+<!-- Trending Posts -->
+<div class="col-span-12 md:col-span-4 space-y-4">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-lg font-headline font-bold uppercase tracking-tight flex items-center gap-2">
+<span class="w-1 h-4 bg-primary"></span> Trending Posts
+                    </h3>
+<span class="material-symbols-outlined text-slate-500 cursor-pointer">open_in_new</span>
+</div>
+<!-- Main Card -->
+<div class="group relative aspect-video rounded-xl overflow-hidden bg-surface-container-low border border-white/5">
+<img alt="Consultation" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-60" data-alt="Cinematic interior shot of a professional legal office with warm task lighting and blurred background architectural details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkeYu6f_KAL8k5IuPqn_07Xg6UcFwgm-j4yFQG9gDY79Sj3XBhfiMti8rqJDw0Wf1RtvsdrYUDLo7XrEzCV_X1zB6dDLuRsRC_JAhzDMPM67nGH9939LIpnnT_ibj0wH3oF23vYAI5YKIJOZKMGOb37074tFIMA0mEJ7EYlXUX6xu0EN5KgxC1WB7JRtr_NMoNz4dELr388K42zfiHTj4GAKyG04GAM5HABF1v4GUZneRtrfTIPWqMfbr5D-c_IA_-fkCDkhfehqwY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4">
+<span class="bg-primary text-on-primary text-[10px] font-mono px-2 py-0.5 rounded-sm mb-2 inline-block">REDDIT / VIRAL</span>
+<h4 class="text-sm font-headline font-bold leading-tight line-clamp-2">"Is the dream over? My honest experience applying for Express Entry in 2024"</h4>
+</div>
+</div>
+<!-- List Items -->
+<div class="space-y-3">
+<div class="flex gap-4 p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group">
+<div class="w-16 h-16 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img alt="Document" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Minimalist top-down view of Canadian legal documents and a pen on a dark surface with sharp lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFyd8BXRQS8pRkrq8o9Hd0RsNr_xIaz8iecPDhDt5bHXp9Q4N_AASc_gyVq5eOn7N6amdllekEfFausr-1pywCXySNlwyXhiv2eSmh8tgevcQTSZBECB1KR7xMB9qOLgct39AVBvVs_1SvdZ3FFz7th5P6pgiCsACO4ImLjMk3AJeIYKAwAu6q3atIVPU_vdfUafbxJezxVvcb_Aqgc_FY9-9w_pg3iaN_dlgC46CoqquXA_C9wPySUWRiVJt6Gd9xt6Q32TsiiaXf"/>
+</div>
+<div>
+<p class="text-xs font-bold leading-snug line-clamp-2 mb-1">New Proof of Funds requirements updated by IRCC</p>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase">342 Comments • 2.4k Upvotes</span>
+</div>
+</div>
+<div class="flex gap-4 p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors group">
+<div class="w-16 h-16 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img alt="Meeting" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Abstract silhouettes of professionals in a high-rise meeting room overlooking a twilight cityscape" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfFZSGaCqEue_khL_2ED3cKp-2WdXwlEJU0mX_DABu6VzQUOrzmp_xTQdAnaSXIsRw1PsdCsA753pHKhg74Xin1nJgfpY9JAYGO1UXlvjITWFXR-AoAgWCmubGDhCOPoLpm76B1utIq79sKnkdLMzcGioN843R5VUDY3uy1Jq4Yzo90POrCsO_U4cL4mV1uXZdPtezDvyLeU2dbWQ3gMbqlkklOiemBNvGOt8Na3e_rA6IdaF3PEWIJA3_SgyRCllfDLQTwMj2-QJH"/>
+</div>
+<div>
+<p class="text-xs font-bold leading-snug line-clamp-2 mb-1">Success Story: 38-year old software dev gets PnP nomination</p>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase">89 Comments • 1.1k Upvotes</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Top Queries -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-low rounded-xl p-6 shadow-sm">
+<h3 class="text-lg font-headline font-bold uppercase tracking-tight mb-6 flex items-center gap-2">
+<span class="w-1 h-4 bg-primary"></span> Popular Intent
+                </h3>
+<div class="space-y-5">
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">search</span>
+</div>
+<span class="text-sm font-mono text-on-surface group-hover:text-primary transition-colors">"express entry 2024"</span>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">842 Q/HR</span>
+</div>
+<div class="flex items-center justify-between group border-t border-white/5 pt-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">public</span>
+</div>
+<span class="text-sm font-mono text-on-surface group-hover:text-primary transition-colors">"PnP wait times"</span>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">612 Q/HR</span>
+</div>
+<div class="flex items-center justify-between group border-t border-white/5 pt-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">work</span>
+</div>
+<span class="text-sm font-mono text-on-surface group-hover:text-primary transition-colors">"LMIA job offers"</span>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">455 Q/HR</span>
+</div>
+<div class="flex items-center justify-between group border-t border-white/5 pt-4">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">school</span>
+</div>
+<span class="text-sm font-mono text-on-surface group-hover:text-primary transition-colors">"SDS student visa"</span>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">311 Q/HR</span>
+</div>
+</div>
+<div class="mt-8">
+<p class="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-4">Volume Heatmap</p>
+<div class="flex gap-1 h-12">
+<div class="flex-1 bg-primary/20 rounded-sm"></div>
+<div class="flex-1 bg-primary/40 rounded-sm"></div>
+<div class="flex-1 bg-primary/10 rounded-sm"></div>
+<div class="flex-1 bg-primary/60 rounded-sm"></div>
+<div class="flex-1 bg-primary/90 rounded-sm"></div>
+<div class="flex-1 bg-primary/30 rounded-sm"></div>
+<div class="flex-1 bg-primary/50 rounded-sm"></div>
+<div class="flex-1 bg-primary/80 rounded-sm"></div>
+</div>
+</div>
+</div>
+<!-- Top Creators -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-low rounded-xl p-6 shadow-sm overflow-hidden">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-headline font-bold uppercase tracking-tight flex items-center gap-2">
+<span class="w-1 h-4 bg-primary"></span> Intelligence Nodes
+                    </h3>
+</div>
+<div class="flex border-b border-white/5 mb-6">
+<button class="flex-1 pb-3 text-[10px] font-mono uppercase tracking-widest text-primary border-b-2 border-primary">Active</button>
+<button class="flex-1 pb-3 text-[10px] font-mono uppercase tracking-widest text-on-surface-variant hover:text-on-surface">Gainers</button>
+<button class="flex-1 pb-3 text-[10px] font-mono uppercase tracking-widest text-on-surface-variant hover:text-on-surface">Losers</button>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="w-10 h-10 rounded bg-surface-container-highest" data-alt="Simple geometric avatar icon with initials IV on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTBSEpY7U6hkqaL__AZYDXS4dqwQrsSX2VNxoLiGgcf8COcjeSqjGbPBJnP0VX28FRapYXkGY4fihp4GJpXobc2OBflw2lV1gGrY9t0heJrHcMkHl-oA5pF4L_vq11TPKrSIX5cBSBTA2P68AAVQ7xLbbtOotxu5GVuVuK79TqzcYhVBj_mhVs1t8sb4FttsoYv8xbz5moRp_FhK5IAi03SDUeeed332RzM8JF6ol44w7q1EBs5iwF9Av2K-PWq8Y4Vm6LETixm_qW"/>
+<div>
+<h4 class="text-sm font-bold">ImmiVision Lab</h4>
+<p class="text-[10px] font-mono text-on-surface-variant">Expert Analyst</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-mono font-bold">42.1k</p>
+<p class="text-[10px] font-mono text-emerald-400">+12%</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="w-10 h-10 rounded bg-surface-container-highest" data-alt="Simple geometric avatar icon with initials CS on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWOU9LTRCdw2vQv-m-nkmh4iGlCptVrNT-M0rlr8wW4Uqs_PZiy8mdJWgsBnjb3h1LnptbtLnp_Rt4JA4Ctfy5SphYaPlM5XmAhGLCZId4lhQ1mmr0_TvuLdYHXGOSiBM9jm4Y3MwSN0J-wlHPZfF7yXEFAxmRYw0kMc5xF-ZSt7mbyYEsQvnCrj24Exl6xXlZ78s_J_DbMfuH1Zr8mIBdHuHIcl4FDAWYDwyn3-4XdB-GsF5UeG_3BTLsD8EvIVVmfzDFYA8EzJoC"/>
+<div>
+<h4 class="text-sm font-bold">CanadaSignals</h4>
+<p class="text-[10px] font-mono text-on-surface-variant">News Network</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-mono font-bold">118k</p>
+<p class="text-[10px] font-mono text-emerald-400">+5.2%</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="Avatar" class="w-10 h-10 rounded bg-surface-container-highest" data-alt="Simple geometric avatar icon with initials LR on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpfwjhb7ga0jlB1U85HsxWUcVPfv3f0vrp2wxaHhFTDYQ8ImjCDIB4ctcabwUZnBkSGi6-qMt1bFitsDdGISQ7YIu2nIM9puNn1d6raDqyW9zx37xrAadPNqWisjETCXxip5abJ5vUTZhVVNK-iqzjJzTt_EtoAs-6481IAl8pxV5i1KoPae8eAFs0kE5Ddif7b9MFnwaxIM2R7UTANt61zVx2rob5FQl0syDoqV60GZx0D5BsFUuIXi4j-5ZEiIRAi9w5vfQl010H"/>
+<div>
+<h4 class="text-sm font-bold">LawyerRick</h4>
+<p class="text-[10px] font-mono text-on-surface-variant">RCIC Consultant</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-mono font-bold">8.9k</p>
+<p class="text-[10px] font-mono text-error">-1.4%</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section B: Interest Over Time Chart Area -->
+<section class="mb-12">
+<div class="bg-surface-container-low rounded-xl p-8 border border-white/5 shadow-inner">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-xl font-headline font-bold">Interest Over Time</h3>
+<p class="text-sm text-on-surface-variant">Demand velocity over the last 24 hours (Hourly intervals)</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant">Query Pulse</span>
+</div>
+<select class="bg-surface-container text-[10px] font-mono border-none rounded focus:ring-0">
+<option>LAST 24 HOURS</option>
+<option>LAST 7 DAYS</option>
+</select>
+</div>
+</div>
+<!-- Mock Chart Canvas -->
+<div class="h-[300px] w-full relative group">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#b4c5ff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#b4c5ff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0 250 L50 240 L100 210 L150 220 L200 180 L250 160 L300 190 L350 140 L400 150 L450 100 L500 120 L550 80 L600 90 L650 60 L700 70 L750 40 L800 50 L850 30 L900 45 L950 20 L1000 35 L1050 15 L1100 25 L1150 5 L1200 10 V300 H0 Z" fill="url(#chartGradient)"></path>
+<path d="M0 250 L50 240 L100 210 L150 220 L200 180 L250 160 L300 190 L350 140 L400 150 L450 100 L500 120 L550 80 L600 90 L650 60 L700 70 L750 40 L800 50 L850 30 L900 45 L950 20 L1000 35 L1050 15 L1100 25 L1150 5 L1200 10" fill="none" stroke="#b4c5ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+</svg>
+<!-- Time Markers -->
+<div class="absolute bottom-[-24px] left-0 w-full flex justify-between text-[10px] font-mono text-on-surface-variant opacity-60">
+<span>00:00</span>
+<span>04:00</span>
+<span>08:00</span>
+<span>12:00</span>
+<span>16:00</span>
+<span>20:00</span>
+<span>23:59</span>
+</div>
+<!-- Hover Tooltip Indicator -->
+<div class="absolute top-[20px] left-[750px] flex flex-col items-center">
+<div class="w-px h-[250px] bg-white/20"></div>
+<div class="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,1)]"></div>
+<div class="bg-surface-container-highest p-2 rounded shadow-xl mt-[-280px] border border-primary/20 z-10 w-24">
+<p class="text-[8px] font-mono text-on-surface-variant">15:00 UTC</p>
+<p class="text-xs font-mono font-bold text-primary">842 reqs</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section C: Rising & Top Queries Tables -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+<!-- Top Queries -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-white/5">
+<div class="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+<h3 class="text-sm font-headline font-bold uppercase tracking-widest">Global Top Queries</h3>
+<span class="text-[10px] font-mono text-on-surface-variant uppercase">Sorted by total volume</span>
+</div>
+<table class="w-full text-left">
+<thead class="bg-surface-container-high text-[10px] font-mono uppercase tracking-widest text-on-surface-variant">
+<tr>
+<th class="px-6 py-3 font-normal">Rank</th>
+<th class="px-6 py-3 font-normal">Query</th>
+<th class="px-6 py-3 font-normal">Interest Share</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">1</td>
+<td class="px-6 py-4 text-xs font-medium">canada express entry draw</td>
+<td class="px-6 py-4">
+<div class="w-full h-1 bg-white/5 rounded-full">
+<div class="bg-primary h-full rounded-full" style="width: 100%"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">2</td>
+<td class="px-6 py-4 text-xs font-medium">study permit requirements 2024</td>
+<td class="px-6 py-4">
+<div class="w-full h-1 bg-white/5 rounded-full">
+<div class="bg-primary h-full rounded-full" style="width: 82%"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">3</td>
+<td class="px-6 py-4 text-xs font-medium">ontario oinp news today</td>
+<td class="px-6 py-4">
+<div class="w-full h-1 bg-white/5 rounded-full">
+<div class="bg-primary h-full rounded-full" style="width: 65%"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">4</td>
+<td class="px-6 py-4 text-xs font-medium">pr points calculator</td>
+<td class="px-6 py-4">
+<div class="w-full h-1 bg-white/5 rounded-full">
+<div class="bg-primary h-full rounded-full" style="width: 44%"></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Rising Queries -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-white/5">
+<div class="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+<h3 class="text-sm font-headline font-bold uppercase tracking-widest text-primary">Rising Queries</h3>
+<span class="text-[10px] font-mono text-primary uppercase">Trending Now</span>
+</div>
+<table class="w-full text-left">
+<thead class="bg-surface-container-high text-[10px] font-mono uppercase tracking-widest text-on-surface-variant">
+<tr>
+<th class="px-6 py-3 font-normal">Rank</th>
+<th class="px-6 py-3 font-normal">Query</th>
+<th class="px-6 py-3 font-normal">Growth</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">1</td>
+<td class="px-6 py-4 flex items-center gap-2">
+<span class="text-xs font-medium">new student cap policy</span>
+<span class="bg-primary/20 text-primary text-[8px] font-bold px-1 rounded-sm">BREAKOUT</span>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-emerald-400">+4,250%</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">2</td>
+<td class="px-6 py-4 flex items-center gap-2">
+<span class="text-xs font-medium">caregiver pilot program 2024</span>
+<span class="bg-primary/20 text-primary text-[8px] font-bold px-1 rounded-sm">BREAKOUT</span>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-emerald-400">+1,100%</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">3</td>
+<td class="px-6 py-4 text-xs font-medium">post grad work permit extension</td>
+<td class="px-6 py-4 text-xs font-mono text-emerald-400">+450%</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4 font-mono text-xs">4</td>
+<td class="px-6 py-4 text-xs font-medium">h1b canada work permit</td>
+<td class="px-6 py-4 text-xs font-mono text-emerald-400">+310%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Section D: Volume Distribution Chart Area -->
+<section class="mb-12">
+<div class="bg-surface-container-low rounded-xl p-8 border border-white/5">
+<div class="flex items-center justify-between mb-10">
+<div>
+<h3 class="text-xl font-headline font-bold">Answer Efficiency Distribution</h3>
+<p class="text-sm text-on-surface-variant">Monthly breakdown of signal fulfillment (Jan - Dec)</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-primary-container"></span>
+<span class="text-[10px] font-mono uppercase text-on-surface-variant">Answered</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-surface-container-highest"></span>
+<span class="text-[10px] font-mono uppercase text-on-surface-variant">Unanswered</span>
+</div>
+</div>
+</div>
+<!-- Grouped Bar Chart -->
+<div class="flex items-end justify-between h-[250px] gap-4 px-4 border-b border-white/5 pb-2">
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[40%]" title="Answered: 40%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[10%]" title="Unanswered: 10%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[45%]" title="Answered: 45%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[15%]" title="Unanswered: 15%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">FEB</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[60%]" title="Answered: 60%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[12%]" title="Unanswered: 12%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[80%]" title="Answered: 80%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[20%]" title="Unanswered: 20%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">APR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[75%]" title="Answered: 75%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[25%]" title="Unanswered: 25%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">MAY</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[65%]" title="Answered: 65%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[35%]" title="Unanswered: 35%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">JUN</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[90%]" title="Answered: 90%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[10%]" title="Unanswered: 10%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50 text-primary font-bold">JUL</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[70%]" title="Answered: 70%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[15%]" title="Unanswered: 15%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">AUG</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[55%]" title="Answered: 55%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[20%]" title="Unanswered: 20%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">SEP</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[40%]" title="Answered: 40%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[30%]" title="Unanswered: 30%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">OCT</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[35%]" title="Answered: 35%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[45%]" title="Unanswered: 45%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">NOV</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-1 items-end h-full">
+<div class="w-1/3 bg-primary-container rounded-t-sm h-[25%]" title="Answered: 25%"></div>
+<div class="w-1/3 bg-surface-container-highest rounded-t-sm h-[60%]" title="Unanswered: 60%"></div>
+</div>
+<span class="text-[10px] font-mono mt-2 opacity-50">DEC</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section E: Subtopic Taxonomy Grid -->
+<section class="mb-12">
+<h3 class="text-sm font-headline font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+<span class="w-1 h-4 bg-primary"></span> Taxonomy Clusters
+            </h3>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Work Permits</p>
+<p class="text-[10px] font-mono text-on-surface-variant">1,242 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Student Visas</p>
+<p class="text-[10px] font-mono text-on-surface-variant">943 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">PNP Programs</p>
+<p class="text-[10px] font-mono text-on-surface-variant">856 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Family Spons.</p>
+<p class="text-[10px] font-mono text-on-surface-variant">411 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Express Entry</p>
+<p class="text-[10px] font-mono text-on-surface-variant">2,109 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Refugee Claims</p>
+<p class="text-[10px] font-mono text-on-surface-variant">128 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Citizenship</p>
+<p class="text-[10px] font-mono text-on-surface-variant">302 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Medical Exams</p>
+<p class="text-[10px] font-mono text-on-surface-variant">88 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">LMIA Processing</p>
+<p class="text-[10px] font-mono text-on-surface-variant">523 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Bridging Permits</p>
+<p class="text-[10px] font-mono text-on-surface-variant">194 signals</p>
+</div>
+<div class="bg-surface-container-low hover:bg-primary/20 border border-white/5 hover:border-primary/50 p-4 rounded-lg cursor-pointer transition-all group">
+<p class="text-xs font-medium group-hover:text-primary">Biometrics</p>
+<p class="text-[10px] font-mono text-on-surface-variant">67 signals</p>
+</div>
+<div class="bg-surface-container-low border border-white/5 border-dashed p-4 rounded-lg flex items-center justify-center opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-sm">add</span>
+<span class="text-[10px] font-mono ml-2">EXPLORE ALL</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating CTA -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="bg-[#1A52C7] hover:bg-[#1A52C7]/90 text-white px-6 py-4 rounded-full flex items-center gap-3 shadow-[0_10px_30px_rgba(26,82,199,0.4)] transition-all hover:scale-105 active:scale-95 group">
+<span class="material-symbols-outlined font-bold group-hover:rotate-12 transition-transform">task_alt</span>
+<span class="font-headline font-bold text-sm tracking-tight">Claim a Question</span>
+</button>
+</div>
+</body></html>
