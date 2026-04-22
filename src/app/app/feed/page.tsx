@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import FeedPostsTable from "./FeedPostsTable.tsx";
+import FeedPostsTable from "./FeedPostsTable";
 
 type FeedPost = {
   id: string;
