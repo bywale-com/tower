@@ -7,8 +7,8 @@ import type {
   Surface,
   Signal,
   Transcript,
-  SignalStatus,
 } from "@/lib/supabase/types";
+import SignalsPanel from "./SignalsPanel";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -28,15 +28,6 @@ function formatCount(n: number | null): string {
   return n.toLocaleString();
 }
 
-/** Urgency score → label */
-function urgencyLabel(score: number | null): string {
-  if (score === null) return "Unknown";
-  if (score >= 70) return "Critical Urgency";
-  if (score >= 40) return "High Urgency";
-  if (score >= 20) return "Med Urgency";
-  return "Low Urgency";
-}
-
 /** Urgency score → Tailwind ring color class (SVG stroke) */
 function urgencyRingColor(score: number | null): string {
   if (score === null) return "text-outline";
@@ -44,41 +35,6 @@ function urgencyRingColor(score: number | null): string {
   if (score >= 40) return "text-[#fb923c]";
   if (score >= 20) return "text-yellow-500";
   return "text-primary";
-}
-
-/** Urgency score → left-border color for signal cards */
-function signalBorderColor(score: number | null): string {
-  if (score === null) return "border-outline";
-  if (score >= 70) return "border-error";
-  if (score >= 40) return "border-[#fb923c]";
-  if (score >= 20) return "border-error/50";
-  return "border-primary/40";
-}
-
-/** Urgency score → badge classes for signal cards */
-function signalUrgencyBadge(score: number | null): string {
-  if (score === null) return "bg-outline/20 text-outline";
-  if (score >= 70) return "bg-error/20 text-error";
-  if (score >= 40) return "bg-[#fb923c]/20 text-[#fb923c]";
-  if (score >= 20) return "bg-error/15 text-error";
-  return "bg-primary/20 text-on-primary-container";
-}
-
-/** is_answered → status badge classes + label */
-function statusBadge(status: SignalStatus | null): {
-  label: string;
-  classes: string;
-} {
-  switch (status) {
-    case "true":
-      return { label: "Answered", classes: "bg-green-500/20 text-green-400" };
-    case "false":
-      return { label: "Unanswered", classes: "bg-red-500/20 text-red-400" };
-    case "privated":
-      return { label: "Privated", classes: "bg-zinc-500/20 text-zinc-300" };
-    default:
-      return { label: "Unknown", classes: "bg-surface-container-highest text-on-surface-variant" };
-  }
 }
 
 /** Relative time → "2m ago" / "15h ago" */
@@ -101,6 +57,9 @@ export default async function PostPage({
   params: { id: string };
 }) {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Parallel fetch: post, surface, signals, transcript
   const [postResult, surfaceResult, signalsResult, transcriptResult] = await Promise.all([
@@ -127,7 +86,7 @@ export default async function PostPage({
     supabase
       .from("signals")
       .select(
-        "text, urgency_score, intent_label, is_answered, commented_at, commenter_username"
+        "id, text, urgency_score, intent_label, is_answered, status, claimed_by, commented_at, commenter_username"
       )
       .eq("post_id", params.id)
       .order("urgency_score", { ascending: false })
@@ -437,67 +396,7 @@ export default async function PostPage({
             )}
         </div>
 
-        {/* Demand signals panel */}
-        <div
-          className="bg-surface-container-low rounded-xl overflow-hidden"
-          style={{ border: "1px solid rgba(180,197,255,0.05)" }}
-        >
-          <div className="p-6 bg-surface-container-high/50 flex justify-between items-center">
-            <div>
-              <h3 className="font-headline font-bold text-on-surface">
-                Demand Signals
-              </h3>
-              <p className="text-[10px] font-mono text-primary uppercase tracking-widest">
-                {signals.length} inquiries detected
-              </p>
-            </div>
-            <span className="material-symbols-outlined text-primary">
-              sensors
-            </span>
-          </div>
-
-          <div className="max-h-[440px] overflow-y-auto p-4 space-y-4 no-scrollbar">
-            {signals.length === 0 ? (
-              <p className="text-on-surface-variant text-xs italic p-2">
-                No signals detected for this post yet.
-              </p>
-            ) : (
-              signals.map((signal, i) => {
-                const sb = statusBadge(signal.is_answered);
-                return (
-                  <div
-                    key={i}
-                    className={`bg-surface-container-highest/40 p-4 rounded-lg border-l-2 ${signalBorderColor(signal.urgency_score)} transition-all hover:bg-surface-container-highest/60`}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="text-[10px] font-mono text-outline">
-                        {relativeTime(signal.commented_at)}
-                      </span>
-                      <div className="flex gap-2">
-                        <span
-                          className={`px-2 py-0.5 ${signalUrgencyBadge(signal.urgency_score)} text-[9px] font-bold uppercase tracking-wider rounded-sm`}
-                        >
-                          {urgencyLabel(signal.urgency_score)}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 ${sb.classes} text-[9px] font-bold uppercase tracking-wider rounded-sm`}
-                        >
-                          {sb.label}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-on-surface-variant leading-relaxed italic mb-4">
-                      &quot;{signal.text}&quot;
-                    </p>
-                    <button className="w-full py-2 bg-outline/10 text-outline font-mono text-[10px] uppercase tracking-widest rounded-sm cursor-not-allowed">
-                      Claim Inquiry
-                    </button>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
+        <SignalsPanel signals={signals} currentUserId={user?.id ?? null} />
 
         {/* Footer metadata */}
         <div className="space-y-2">

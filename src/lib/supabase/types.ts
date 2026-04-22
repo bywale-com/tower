@@ -38,10 +38,13 @@ export interface Surface {
 }
 
 export interface Signal {
+  id: string;
   text: string | null;
   urgency_score: number | null;
   intent_label: string | null;
   is_answered: SignalStatus | null;
+  status: string | null;
+  claimed_by: string | null;
   commented_at: string | null;
   commenter_username: string | null;
 }
