@@ -37,15 +37,6 @@ function urgencyRingColor(score: number | null): string {
   return "text-primary";
 }
 
-/** Urgency score → human label */
-function urgencyLabel(score: number | null): string {
-  if (score === null) return "Unknown";
-  if (score >= 70) return "Critical Urgency";
-  if (score >= 40) return "High Urgency";
-  if (score >= 20) return "Med Urgency";
-  return "Low Urgency";
-}
-
 /** Relative time → "2m ago" / "15h ago" */
 function relativeTime(iso: string | null): string {
   if (!iso) return "—";
@@ -132,6 +123,16 @@ export default async function PostPage({
   const RING_C = 440; // circumference for r=70
   const urgencyOffset = RING_C - (RING_C * (post.urgency_score ?? 0)) / 100;
   const ringColor = urgencyRingColor(post.urgency_score);
+  const urgencyText =
+    post.urgency_score === null
+      ? "Unknown"
+      : post.urgency_score >= 70
+        ? "Critical Urgency"
+        : post.urgency_score >= 40
+          ? "High Urgency"
+          : post.urgency_score >= 20
+            ? "Med Urgency"
+            : "Low Urgency";
 
   return (
     <div className="grid grid-cols-12 gap-8 max-w-[1400px] mx-auto">
@@ -373,9 +374,7 @@ export default async function PostPage({
               </span>
             </div>
           </div>
-          <h2 className="text-lg font-headline font-bold text-on-surface">
-            {urgencyLabel(post.urgency_score)}
-          </h2>
+          <h2 className="text-lg font-headline font-bold text-on-surface">{urgencyText}</h2>
           <p className="text-xs font-mono text-outline mt-1 uppercase tracking-widest">
             Based on {post.analyzed_signal_count ?? 0} analyzed comments
           </p>
