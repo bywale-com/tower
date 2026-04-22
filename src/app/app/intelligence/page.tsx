@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 
 function formatCount(n: number | null | undefined): string {
   if (n == null) return "—";
@@ -34,7 +34,7 @@ const CHART_PATH =
 const MONTH_LABELS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 export default async function IntelligencePage() {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   // Phase 1: resolve topic + space identifiers
   const [{ data: topic }, { data: space }] = await Promise.all([

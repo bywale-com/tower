@@ -1,19 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import "server-only";
 
 /**
- * Creates a Supabase client for use in Server Components and Route Handlers.
- * Uses the service role key in server-only contexts so app data can be fetched
- * securely while public/anon API access remains blocked by RLS.
- * Call this inside an async Server Component; do not cache the instance.
+ * Creates a Supabase SSR client bound to request cookies.
+ * Use this for auth flows that rely on user session cookies.
  */
 export function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      "Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required."
+      "Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required."
     );
   }
 
@@ -21,7 +20,7 @@ export function createClient() {
 
   return createServerClient(
     supabaseUrl,
-    supabaseServiceRoleKey,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -40,4 +39,25 @@ export function createClient() {
       },
     }
   );
+}
+
+/**
+ * Creates a server-only Supabase admin client.
+ * Use this for backend data access that must bypass RLS.
+ */
+export function createServiceClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    throw new Error(
+      "Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required."
+    );
+  }
+
+  return createSupabaseClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }

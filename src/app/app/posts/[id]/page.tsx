@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type {
   Post,
   Surface,
@@ -56,10 +56,11 @@ export default async function PostPage({
 }: {
   params: { id: string };
 }) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
+  const authSupabase = createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await authSupabase.auth.getUser();
 
   // Parallel fetch: post, surface, signals, transcript
   const [postResult, surfaceResult, signalsResult, transcriptResult] = await Promise.all([

@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import DiscoverSearch from "./DiscoverSearch";
 
 export default async function DiscoverPage() {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   const [{ data: trendingTopics }, { data: topicsData }] = await Promise.all([
     supabase

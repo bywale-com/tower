@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import FeedPostsTable from "./FeedPostsTable";
 
 type FeedPost = {
@@ -39,7 +39,7 @@ export default async function FeedPage({
 }: {
   searchParams: { space?: string };
 }) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
   const spaceSlug = searchParams.space;
 
   let spaceId: string | null = null;
