@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -12,6 +14,43 @@ const navItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const isAuthPage = pathname === "/app/login" || pathname === "/app/signup";
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUserEmail(user?.email ?? null);
+    }
+
+    loadUser();
+  }, []);
+
+  const userInitial = useMemo(() => {
+    if (!userEmail) return "?";
+    return userEmail.charAt(0).toUpperCase();
+  }, [userEmail]);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/app/login");
+    router.refresh();
+  }
+
+  if (isAuthPage) {
+    return (
+      <div className="min-h-screen bg-background text-on-background">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="flex bg-background min-h-screen">
@@ -67,14 +106,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             New Inquiry
           </button>
           <div className="flex flex-col gap-1 pt-4" style={{ borderTop: "1px solid rgba(67,70,84,0.2)" }}>
-            <Link href="#" className="text-on-surface-variant hover:text-on-background py-2 px-2 flex items-center gap-3 text-sm font-headline">
+            <Link href="/app/account" className="text-on-surface-variant hover:text-on-background py-2 px-2 flex items-center gap-3 text-sm font-headline">
               <span className="material-symbols-outlined text-lg">account_circle</span>
               Account
             </Link>
-            <Link href="#" className="text-on-surface-variant hover:text-on-background py-2 px-2 flex items-center gap-3 text-sm font-headline">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-on-surface-variant hover:text-on-background py-2 px-2 flex items-center gap-3 text-sm font-headline text-left"
+            >
               <span className="material-symbols-outlined text-lg">logout</span>
               Logout
-            </Link>
+            </button>
           </div>
         </div>
       </aside>
@@ -94,7 +137,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="material-symbols-outlined">settings</span>
             </button>
             <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center ml-2">
-              <span className="material-symbols-outlined text-on-surface text-sm">person</span>
+              <span className="text-on-surface text-sm font-bold">{userInitial}</span>
             </div>
           </div>
         </header>
