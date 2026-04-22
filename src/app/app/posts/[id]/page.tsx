@@ -37,6 +37,15 @@ function urgencyRingColor(score: number | null): string {
   return "text-primary";
 }
 
+/** Urgency score → human label */
+function urgencyLabel(score: number | null): string {
+  if (score === null) return "Unknown";
+  if (score >= 70) return "Critical Urgency";
+  if (score >= 40) return "High Urgency";
+  if (score >= 20) return "Med Urgency";
+  return "Low Urgency";
+}
+
 /** Relative time → "2m ago" / "15h ago" */
 function relativeTime(iso: string | null): string {
   if (!iso) return "—";
