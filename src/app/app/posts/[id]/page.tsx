@@ -146,14 +146,15 @@ export default async function PostPage({
   }
 
   const post = postResult.data as Post;
-  const surface = (surfaceResult.data as (Surface & { posts?: { id: string }[] }) | null)
+  const surfaceRaw = surfaceResult.data as (Surface & { posts?: { id: string }[] }) | null;
+  const surface: Surface | null = surfaceRaw
     ? ({
-        username: surfaceResult.data.username,
-        full_name: surfaceResult.data.full_name,
-        followers: surfaceResult.data.followers,
-        is_verified: surfaceResult.data.is_verified,
-        avatar_url: surfaceResult.data.avatar_url,
-        incumbency_score: surfaceResult.data.incumbency_score,
+        username: surfaceRaw.username,
+        full_name: surfaceRaw.full_name,
+        followers: surfaceRaw.followers,
+        is_verified: surfaceRaw.is_verified,
+        avatar_url: surfaceRaw.avatar_url,
+        incumbency_score: surfaceRaw.incumbency_score,
       } as Surface)
     : null;
   const signals: Signal[] = signalsResult.data ?? [];
