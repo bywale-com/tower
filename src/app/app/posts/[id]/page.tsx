@@ -146,15 +146,15 @@ export default async function PostPage({
   }
 
   const post = postResult.data as Post;
-  const surfaceRaw = surfaceResult.data as (Surface & { posts?: { id: string }[] }) | null;
-  const surface: Surface | null = surfaceRaw
+  const surfaceData = surfaceResult.data as (Surface & { posts?: { id: string }[] }) | null;
+  const surface = surfaceData
     ? ({
-        username: surfaceRaw.username,
-        full_name: surfaceRaw.full_name,
-        followers: surfaceRaw.followers,
-        is_verified: surfaceRaw.is_verified,
-        avatar_url: surfaceRaw.avatar_url,
-        incumbency_score: surfaceRaw.incumbency_score,
+        username: surfaceData.username,
+        full_name: surfaceData.full_name,
+        followers: surfaceData.followers,
+        is_verified: surfaceData.is_verified,
+        avatar_url: surfaceData.avatar_url,
+        incumbency_score: surfaceData.incumbency_score,
       } as Surface)
     : null;
   const signals: Signal[] = signalsResult.data ?? [];
@@ -163,10 +163,6 @@ export default async function PostPage({
   // Computed values
   const RING_C = 440; // circumference for r=70
   const urgencyOffset = RING_C - (RING_C * (post.urgency_score ?? 0)) / 100;
-  const incumbencyC = 2 * Math.PI * 40; // r=40 for creator gauge
-  const incumbencyOffset =
-    incumbencyC -
-    (incumbencyC * (surface?.incumbency_score ?? 0)) / 100;
   const ringColor = urgencyRingColor(post.urgency_score);
 
   return (
@@ -349,12 +345,12 @@ export default async function PostPage({
               <span className="material-symbols-outlined text-primary text-lg">
                 psychology
               </span>{" "}
-              Tower's Read
+              Tower&apos;s Read
             </h3>
             <div className="h-48 bg-primary/10 p-5 rounded-xl border border-primary/20 flex flex-col justify-center">
               {post.ai_summary ? (
                 <p className="text-primary text-sm leading-relaxed italic">
-                  "{post.ai_summary}"
+                  &quot;{post.ai_summary}&quot;
                 </p>
               ) : (
                 <p className="text-outline text-xs italic">
@@ -491,7 +487,7 @@ export default async function PostPage({
                       </div>
                     </div>
                     <p className="text-xs text-on-surface-variant leading-relaxed italic mb-4">
-                      "{signal.text}"
+                      &quot;{signal.text}&quot;
                     </p>
                     <button className="w-full py-2 bg-outline/10 text-outline font-mono text-[10px] uppercase tracking-widest rounded-sm cursor-not-allowed">
                       Claim Inquiry

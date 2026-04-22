@@ -225,7 +225,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
           >
             <div>
               <h3 className="font-headline font-bold text-xl text-on-background tracking-tight">
-                @{params.username}'s Contributions
+                @{params.username}&apos;s Contributions
               </h3>
               <p className="text-xs text-on-surface-variant mt-0.5">Analytic processing of published assets</p>
             </div>
