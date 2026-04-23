@@ -105,7 +105,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <button className="w-full py-3 bg-primary-container text-on-primary-container rounded-lg font-bold text-sm hover:opacity-90 transition-opacity mb-6">
             New Inquiry
           </button>
-          <div className="flex flex-col gap-1 pt-4" style={{ borderTop: "1px solid rgba(67,70,84,0.2)" }}>
+          <div className="flex flex-col gap-1 pt-4 border-t border-outline-variant/20">
             <Link href="/app/account" className="text-on-surface-variant hover:text-on-background py-2 px-2 flex items-center gap-3 text-sm font-headline">
               <span className="material-symbols-outlined text-lg">account_circle</span>
               Account

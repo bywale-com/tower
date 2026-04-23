@@ -31,8 +31,8 @@ export default function PostLoading() {
           <div className="h-3.5 w-4/5 bg-muted rounded" />
           {/* Hashtag chips */}
           <div className="flex flex-wrap gap-2 pt-2">
-            {[72, 88, 64, 96, 80].map((w, i) => (
-              <div key={i} className="h-5 bg-muted rounded" style={{ width: w }} />
+            {(["w-[72px]", "w-[88px]", "w-16", "w-24", "w-20"] as const).map((w, i) => (
+              <div key={i} className={`h-5 bg-muted rounded ${w}`} />
             ))}
           </div>
         </div>
@@ -59,12 +59,8 @@ export default function PostLoading() {
               <div className="h-4 w-24 bg-muted rounded" />
             </div>
             <div className="h-48 bg-surface-container-low rounded-xl p-4 space-y-3">
-              {[100, 90, 95, 88, 92].map((pct, i) => (
-                <div
-                  key={i}
-                  className="h-3 bg-muted rounded"
-                  style={{ width: `${pct}%` }}
-                />
+              {(["w-full", "w-[90%]", "w-[95%]", "w-[88%]", "w-[92%]"] as const).map((w, i) => (
+                <div key={i} className={`h-3 bg-muted rounded ${w}`} />
               ))}
             </div>
           </div>
@@ -73,12 +69,8 @@ export default function PostLoading() {
           <div className="space-y-4">
             <div className="h-4 w-28 bg-muted rounded" />
             <div className="h-48 bg-primary/10 rounded-xl border border-primary/20 p-5 space-y-3 flex flex-col justify-center">
-              {[92, 100, 88, 76].map((pct, i) => (
-                <div
-                  key={i}
-                  className="h-3 bg-muted rounded"
-                  style={{ width: `${pct}%` }}
-                />
+              {(["w-[92%]", "w-full", "w-[88%]", "w-[76%]"] as const).map((w, i) => (
+                <div key={i} className={`h-3 bg-muted rounded ${w}`} />
               ))}
             </div>
           </div>
@@ -97,8 +89,7 @@ export default function PostLoading() {
           <div className="h-3 w-48 bg-muted rounded" />
           {/* Creator score bar */}
           <div
-            className="mt-6 w-full pt-6 flex justify-between items-center px-4"
-            style={{ borderTop: "1px solid rgba(180,197,255,0.1)" }}
+            className="mt-6 w-full pt-6 flex justify-between items-center px-4 border-t border-primary/10"
           >
             <div className="h-3 w-24 bg-muted rounded" />
             <div className="flex items-center gap-2">
@@ -110,8 +101,7 @@ export default function PostLoading() {
 
         {/* Demand signals panel placeholder */}
         <div
-          className="bg-surface-container-low rounded-xl overflow-hidden"
-          style={{ border: "1px solid rgba(180,197,255,0.05)" }}
+          className="bg-surface-container-low rounded-xl overflow-hidden border border-primary/5"
         >
           {/* Panel header */}
           <div className="p-6 bg-surface-container-high/50 flex justify-between items-center">

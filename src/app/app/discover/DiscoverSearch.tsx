@@ -57,19 +57,10 @@ export default function DiscoverSearch({
   }
 
   return (
-    <div
-      className="relative flex flex-col items-center justify-center -mx-8 -mt-8"
-      style={{ minHeight: "calc(100vh - 56px)" }}
-    >
+    <div className="relative flex flex-col items-center justify-center -mx-8 -mt-8 min-h-[calc(100vh-56px)]">
       {/* Ambient glow blobs */}
-      <div
-        className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{ background: "rgba(26,82,199,0.1)", filter: "blur(120px)" }}
-      />
-      <div
-        className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: "rgba(13,21,70,0.1)", filter: "blur(100px)" }}
-      />
+      <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full pointer-events-none bg-primary-container/10 blur-[120px]" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full pointer-events-none bg-[rgba(13,21,70,0.1)] blur-[100px]" />
 
       {/* Search container */}
       <div className="w-full max-w-[640px] flex flex-col items-center z-10 px-4">
@@ -93,16 +84,14 @@ export default function DiscoverSearch({
             onBlur={() => setTimeout(() => setFocused(false), 150)}
             onKeyDown={handleKeyDown}
             placeholder="Search a market, topic, or industry..."
-            className="w-full h-[52px] bg-surface-container-low border-none rounded-lg pl-14 pr-14 text-on-background placeholder:text-outline text-base focus:outline-none focus:ring-1 shadow-xl shadow-black/20 transition-all"
-            style={{ "--tw-ring-color": "rgba(180,197,255,0.4)" } as React.CSSProperties}
+            className="w-full h-[52px] bg-surface-container-low border-none rounded-lg pl-14 pr-14 text-on-background placeholder:text-outline text-base focus:outline-none focus:ring-1 focus:ring-primary/40 shadow-xl shadow-black/20 transition-all"
           />
         </form>
 
         {/* Autocomplete dropdown */}
         {showDropdown && (
           <div
-            className="w-full mt-2 bg-surface-container-low rounded-xl overflow-hidden shadow-2xl shadow-black/40"
-            style={{ border: "1px solid rgba(67,70,84,0.1)" }}
+            className="w-full mt-2 bg-surface-container-low rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-outline-variant/10"
           >
             <div className="flex flex-col">
               {filtered.map((t) => (
@@ -122,13 +111,7 @@ export default function DiscoverSearch({
                 </button>
               ))}
             </div>
-            <div
-              className="px-5 py-3 flex justify-between items-center"
-              style={{
-                background: "rgba(25,31,47,0.4)",
-                borderTop: "1px solid rgba(67,70,84,0.1)",
-              }}
-            >
+            <div className="px-5 py-3 flex justify-between items-center bg-surface-container/40 border-t border-outline-variant/10">
               <div className="flex gap-4">
                 <span className="text-[10px] font-mono text-outline uppercase tracking-tighter flex items-center gap-1">
                   <span className="px-1.5 py-0.5 rounded bg-surface-container-highest border border-outline-variant/30 text-on-surface">
@@ -158,8 +141,7 @@ export default function DiscoverSearch({
                 key={t.id}
                 type="button"
                 onClick={() => navigate(t.label.toLowerCase().replace(/\s+/g, "-"), t.label)}
-                className="px-3 py-1.5 bg-surface-container-low text-xs text-outline rounded-full cursor-pointer transition-all hover:border-primary/40 hover:text-on-surface"
-                style={{ border: "1px solid rgba(67,70,84,0.1)" }}
+                className="px-3 py-1.5 bg-surface-container-low text-xs text-outline rounded-full cursor-pointer border border-outline-variant/10 transition-all hover:border-primary/40 hover:text-on-surface"
               >
                 {t.label}
               </button>
@@ -175,8 +157,7 @@ export default function DiscoverSearch({
                 key={t.id}
                 type="button"
                 onClick={() => navigate(t.slug, t.title)}
-                className="px-3 py-1.5 bg-surface-container-low text-xs text-outline rounded-full cursor-pointer transition-all hover:border-primary/40 hover:text-on-surface"
-                style={{ border: "1px solid rgba(67,70,84,0.1)" }}
+                className="px-3 py-1.5 bg-surface-container-low text-xs text-outline rounded-full cursor-pointer border border-outline-variant/10 transition-all hover:border-primary/40 hover:text-on-surface"
               >
                 {t.title}
               </button>
