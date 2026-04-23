@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
+import styles from "./page.module.css";
 
 function formatCount(n: number | null | undefined): string {
   if (n == null) return "—";
@@ -217,8 +218,7 @@ export default async function IntelligencePage({
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
           {/* Urgency gauge */}
           <div
-            className="bg-surface-container-low p-6 rounded-xl flex items-center justify-between shadow-lg"
-            style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+            className="bg-surface-container-low p-6 rounded-xl flex items-center justify-between shadow-lg border border-white/5"
           >
             <div className="relative w-24 h-24">
               <svg className="w-full h-full transform -rotate-90">
@@ -300,8 +300,7 @@ export default async function IntelligencePage({
             <>
               <Link href={`/app/posts/${trendingPosts[0].id}`}>
                 <div
-                  className="group relative aspect-video rounded-xl overflow-hidden bg-surface-container-low"
-                  style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+                  className="group relative aspect-video rounded-xl overflow-hidden bg-surface-container-low border border-white/5"
                 >
                   {trendingPosts[0].thumbnail_url ? (
                     <img
@@ -409,7 +408,7 @@ export default async function IntelligencePage({
               <span className="w-1 h-4 bg-primary inline-block" /> Intelligence Nodes
             </h3>
           </div>
-          <div className="flex" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="flex border-b border-white/5">
             {["Active", "Gainers", "Losers"].map((tab, i) => (
               <button
                 key={tab}
@@ -478,8 +477,7 @@ export default async function IntelligencePage({
       {/* ── SECTION B: INTEREST OVER TIME CHART ──────────────────────────── */}
       <section>
         <div
-          className="bg-surface-container-low rounded-xl p-8"
-          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+          className="bg-surface-container-low rounded-xl p-8 border border-white/5"
         >
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -531,13 +529,9 @@ export default async function IntelligencePage({
       {/* ── SECTION C: TOP / RISING QUERIES ──────────────────────────────── */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div
-          className="bg-surface-container-low rounded-xl overflow-hidden"
-          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+          className="bg-surface-container-low rounded-xl overflow-hidden border border-white/5"
         >
-          <div
-            className="px-6 py-4 flex items-center justify-between"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-          >
+          <div className="px-6 py-4 flex items-center justify-between border-b border-white/5">
             <h3 className="text-sm font-headline font-bold uppercase tracking-widest">
               Global Top Queries
             </h3>
@@ -563,8 +557,8 @@ export default async function IntelligencePage({
                       <td className="px-6 py-4">
                         <div className="w-full h-1 bg-white/5 rounded-full">
                           <div
-                            className="bg-primary h-full rounded-full"
-                            style={{ width: `${((q.rate_per_hour ?? 0) / topQueriesMax) * 100}%` }}
+                            className={`bg-primary h-full rounded-full ${styles.interestBar}`}
+                            style={{ "--bar-w": `${((q.rate_per_hour ?? 0) / topQueriesMax) * 100}%` } as React.CSSProperties}
                           />
                         </div>
                       </td>
@@ -581,13 +575,9 @@ export default async function IntelligencePage({
         </div>
 
         <div
-          className="bg-surface-container-low rounded-xl overflow-hidden"
-          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+          className="bg-surface-container-low rounded-xl overflow-hidden border border-white/5"
         >
-          <div
-            className="px-6 py-4 flex items-center justify-between"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-          >
+          <div className="px-6 py-4 flex items-center justify-between border-b border-white/5">
             <h3 className="text-sm font-headline font-bold uppercase tracking-widest text-primary">
               Rising Queries
             </h3>
@@ -637,8 +627,7 @@ export default async function IntelligencePage({
       {barChartRows && barChartRows.length > 0 && (
         <section>
           <div
-            className="bg-surface-container-low rounded-xl p-8"
-            style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+            className="bg-surface-container-low rounded-xl p-8 border border-white/5"
           >
             <div className="flex items-center justify-between mb-10">
               <div>
@@ -657,8 +646,7 @@ export default async function IntelligencePage({
               </div>
             </div>
             <div
-              className="flex items-end justify-between h-[250px] gap-4 px-4 pb-2"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              className="flex items-end justify-between h-[250px] gap-4 px-4 pb-2 border-b border-white/5"
             >
               {barChartRows.map(
                 (m: { month: number; year: number; answered_count: number; unanswered_count: number }) => {
@@ -668,8 +656,8 @@ export default async function IntelligencePage({
                   return (
                     <div key={`${m.year}-${m.month}`} className="flex-1 flex flex-col items-center gap-1 group">
                       <div className="w-full flex justify-center gap-1 items-end h-full">
-                        <div className="w-1/3 bg-primary-container rounded-t-sm" style={{ height: `${ansPct}%` }} />
-                        <div className="w-1/3 bg-surface-container-highest rounded-t-sm" style={{ height: `${unansPct}%` }} />
+                        <div className={`w-1/3 bg-primary-container rounded-t-sm ${styles.bar}`} style={{ "--bar-h": `${ansPct}%` } as React.CSSProperties} />
+                        <div className={`w-1/3 bg-surface-container-highest rounded-t-sm ${styles.bar}`} style={{ "--bar-h": `${unansPct}%` } as React.CSSProperties} />
                       </div>
                       <span className={`text-[10px] font-mono mt-2 opacity-50 ${isCurrent ? "text-primary font-bold opacity-100" : ""}`}>
                         {MONTH_LABELS[(m.month - 1) % 12]}
@@ -693,8 +681,7 @@ export default async function IntelligencePage({
             {tags.map((t: { id: string; tag: string }) => (
               <div
                 key={t.id}
-                className="bg-surface-container-low hover:bg-primary/20 p-4 rounded-lg cursor-pointer transition-all group"
-                style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+                className="bg-surface-container-low hover:bg-primary/20 p-4 rounded-lg cursor-pointer transition-all group border border-white/5"
               >
                 <p className="text-xs font-medium group-hover:text-primary">{t.tag}</p>
               </div>

@@ -1,0 +1,7 @@
+.bar {
+  height: var(--bar-h);
+}
+
+.interestBar {
+  width: var(--bar-w);
+}
