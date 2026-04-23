@@ -145,8 +145,7 @@ export default function SignalsPanel({ signals, currentUserId }: Props) {
 
   return (
     <div
-      className="bg-surface-container-low rounded-xl overflow-hidden"
-      style={{ border: "1px solid rgba(180,197,255,0.05)" }}
+      className="bg-surface-container-low rounded-xl overflow-hidden border border-primary/5"
     >
       <div className="p-6 bg-surface-container-high/50 flex justify-between items-center">
         <div>

@@ -1,7 +1,9 @@
+import type React from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import styles from "./page.module.css";
 import type {
   Post,
   Surface,
@@ -384,8 +386,7 @@ export default async function PostPage({
           {surface?.incumbency_score !== null &&
             surface?.incumbency_score !== undefined && (
               <div
-                className="mt-6 w-full pt-6 flex justify-between items-center px-4"
-                style={{ borderTop: "1px solid rgba(180,197,255,0.1)" }}
+                className="mt-6 w-full pt-6 flex justify-between items-center px-4 border-t border-primary/10"
               >
                 <span className="text-xs font-headline text-on-surface-variant">
                   Creator Score
@@ -393,8 +394,8 @@ export default async function PostPage({
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-24 bg-surface-container-highest rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-primary"
-                      style={{ width: `${surface.incumbency_score}%` }}
+                      className={`h-full bg-primary ${styles.scoreBar}`}
+                      style={{ "--score-w": `${surface.incumbency_score}%` } as React.CSSProperties}
                     />
                   </div>
                   <span className="font-mono text-sm font-bold text-primary">

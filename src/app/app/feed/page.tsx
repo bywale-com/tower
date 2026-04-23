@@ -88,16 +88,6 @@ export default async function FeedPage({
     ((surfacesData ?? []) as SurfaceRow[]).map((surface) => [surface.id, surface])
   );
 
-  console.log("feed query debug", {
-    spaceSlug,
-    spaceId,
-    postsCount: postsData?.length ?? 0,
-    surfaceIdsCount: surfaceIds.length,
-    surfacesCount: surfacesData?.length ?? 0,
-    postsError: postsError?.message ?? null,
-    surfacesError: surfacesError?.message ?? null,
-  });
-
   const feedRows: FeedPost[] =
     postsData?.map((row) => {
       const surface = row.surface_id ? surfacesById.get(row.surface_id) : null;
@@ -118,14 +108,7 @@ export default async function FeedPage({
   return (
     <div className="space-y-0 -mx-8 -mt-8">
       {/* ── TOP BAR ── */}
-      <div
-        className="sticky top-0 z-30 w-full h-14 px-8 flex justify-between items-center"
-        style={{
-          background: "rgba(20,27,43,0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(46,53,69,0.15)",
-        }}
-      >
+      <div className="sticky top-0 z-30 w-full h-14 px-8 flex justify-between items-center glass-nav border-b border-surface-variant/15">
         <div className="flex items-center gap-8">
           <div className="text-xl font-headline font-bold tracking-tighter text-primary">
             SOVEREIGN LENS
@@ -196,8 +179,7 @@ export default async function FeedPage({
         {/* Right: detail panel */}
         <section className="w-1/3">
           <div
-            className="sticky top-20 bg-surface-container-low rounded-xl p-6 shadow-2xl space-y-8"
-            style={{ borderLeft: "1px solid rgba(67,70,84,0.1)" }}
+            className="sticky top-20 bg-surface-container-low rounded-xl p-6 shadow-2xl space-y-8 border-l border-outline-variant/10"
           >
             {/* Header */}
             <div className="flex justify-between items-start">
@@ -231,8 +213,8 @@ export default async function FeedPage({
                 >
                   <defs>
                     <linearGradient id="sparkGrad" x1="0%" x2="0%" y1="0%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: "#1a52c7", stopOpacity: 1 }} />
-                      <stop offset="100%" style={{ stopColor: "#1a52c7", stopOpacity: 0 }} />
+                      <stop offset="0%" stopColor="#1a52c7" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#1a52c7" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <path d={detailPanel.sparkPath} fill="none" stroke="#1a52c7" strokeWidth="3" />
@@ -254,8 +236,7 @@ export default async function FeedPage({
                 {detailPanel.breakdownChips.map((chip) => (
                   <button
                     key={chip}
-                    className="px-3 py-1.5 bg-surface-container-highest text-on-surface text-xs rounded-sm hover:border-primary/50 transition-all active:scale-95"
-                    style={{ border: "1px solid rgba(67,70,84,0.3)" }}
+                    className="px-3 py-1.5 bg-surface-container-highest text-on-surface text-xs rounded-sm border border-outline-variant/30 hover:border-primary/50 transition-all active:scale-95"
                   >
                     {chip}
                   </button>
@@ -272,15 +253,14 @@ export default async function FeedPage({
                 Explore Topic
               </Link>
               <button
-                className="py-3 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-surface-container-highest active:scale-[0.98] transition-all text-on-surface"
-                style={{ border: "1px solid rgba(67,70,84,0.8)" }}
+                className="py-3 rounded-sm font-bold text-xs uppercase tracking-widest border border-outline-variant/80 hover:bg-surface-container-highest active:scale-[0.98] transition-all text-on-surface"
               >
                 Search It
               </button>
             </div>
 
             {/* In the news */}
-            <div className="pt-8" style={{ borderTop: "1px solid rgba(67,70,84,0.15)" }}>
+            <div className="pt-8 border-t border-outline-variant/15">
               <h3 className="text-xs text-on-surface-variant uppercase tracking-widest mb-6">
                 In the News
               </h3>
