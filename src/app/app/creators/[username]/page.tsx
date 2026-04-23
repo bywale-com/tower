@@ -17,6 +17,7 @@ const creator = {
   ],
   incumbencyScore: 74,
   incumbencyColor: "#4ade80",
+  incumbencyClass: "text-green-400",
   signals: [
     {
       id: 1,
@@ -108,7 +109,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
           </div>
           <div className="flex items-start gap-6 mb-6">
             {/* Avatar */}
-            <div className="w-20 h-20 rounded-full border-4 flex-shrink-0 flex items-center justify-center bg-surface-container-highest text-2xl font-bold text-primary" style={{ borderColor: "rgba(180,197,255,0.2)" }}>
+            <div className="w-20 h-20 rounded-full border-4 border-primary/20 flex-shrink-0 flex items-center justify-center bg-surface-container-highest text-2xl font-bold text-primary">
               T
             </div>
             <div className="flex-1">
@@ -131,8 +132,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
             {creator.chips.map((c) => (
               <div
                 key={c.label}
-                className="px-3 py-1 bg-surface-container-high rounded text-[10px] font-mono font-medium text-on-surface-variant"
-                style={{ border: "1px solid rgba(67,70,84,0.1)" }}
+                className="px-3 py-1 bg-surface-container-high rounded text-[10px] font-mono font-medium text-on-surface-variant border border-outline-variant/10"
               >
                 {c.label}
               </div>
@@ -159,7 +159,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
               </span>
               <span className="material-symbols-outlined text-on-surface-variant text-sm cursor-help">info</span>
             </div>
-            <div className="text-5xl font-black font-headline" style={{ color: creator.incumbencyColor }}>
+            <div className={`text-5xl font-black font-headline ${creator.incumbencyClass}`}>
               {creator.incumbencyScore}/100
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="material-symbols-outlined text-3xl" style={{ color: creator.incumbencyColor }}>
+              <span className={`material-symbols-outlined text-3xl ${creator.incumbencyClass}`}>
                 trending_up
               </span>
             </div>
@@ -220,8 +220,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
         <div className="bg-surface-container-low rounded-xl min-h-[800px] flex flex-col">
           {/* Header */}
           <div
-            className="p-6 flex justify-between items-center"
-            style={{ borderBottom: "1px solid rgba(67,70,84,0.1)" }}
+            className="p-6 flex justify-between items-center border-b border-outline-variant/10"
           >
             <div>
               <h3 className="font-headline font-bold text-xl text-on-background tracking-tight">
@@ -264,8 +263,7 @@ export default function CreatorPage({ params }: { params: { username: string } }
                     <h4 className="text-on-background font-bold mb-2 line-clamp-2">{post.title}</h4>
                     <p className="text-xs text-on-surface-variant line-clamp-3 mb-4 leading-relaxed">{post.excerpt}</p>
                     <div
-                      className="mt-auto flex items-center gap-4 pt-4"
-                      style={{ borderTop: "1px solid rgba(67,70,84,0.1)" }}
+                      className="mt-auto flex items-center gap-4 pt-4 border-t border-outline-variant/10"
                     >
                       {post.metrics.map((m) => (
                         <div key={m.icon} className={`flex items-center gap-1 text-[10px] font-mono ${m.color}`}>

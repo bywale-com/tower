@@ -2,21 +2,14 @@ export default function FeedLoading() {
   return (
     <div className="space-y-0 -mx-8 -mt-8 animate-pulse">
       {/* ── TOP BAR skeleton ── */}
-      <div
-        className="sticky top-0 z-30 w-full h-14 px-8 flex justify-between items-center"
-        style={{
-          background: "rgba(20,27,43,0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(46,53,69,0.15)",
-        }}
-      >
+      <div className="sticky top-0 z-30 w-full h-14 px-8 flex justify-between items-center glass-nav border-b border-surface-variant/15">
         <div className="flex items-center gap-8">
           {/* Logo placeholder */}
           <div className="h-5 w-36 bg-muted rounded" />
           {/* Nav tab placeholders */}
           <div className="hidden md:flex gap-6">
-            {[80, 72, 68].map((w, i) => (
-              <div key={i} className="h-3.5 rounded bg-muted" style={{ width: w }} />
+            {(["w-20", "w-[72px]", "w-[68px]"] as const).map((w, i) => (
+              <div key={i} className={`h-3.5 rounded bg-muted ${w}`} />
             ))}
           </div>
         </div>
@@ -45,9 +38,9 @@ export default function FeedLoading() {
               {/* Header row */}
               <thead>
                 <tr className="bg-surface-container-highest/50">
-                  {[160, 80, 56, 60, 88, 72].map((w, i) => (
+                  {(["w-40", "w-20", "w-14", "w-[60px]", "w-[88px]", "w-[72px]"] as const).map((w, i) => (
                     <th key={i} className="px-6 py-4">
-                      <div className="h-3 rounded bg-muted" style={{ width: w }} />
+                      <div className={`h-3 rounded bg-muted ${w}`} />
                     </th>
                   ))}
                 </tr>
@@ -96,8 +89,7 @@ export default function FeedLoading() {
         {/* Right: detail panel skeleton */}
         <section className="w-1/3">
           <div
-            className="sticky top-20 bg-surface-container-low rounded-xl p-6 shadow-2xl space-y-8"
-            style={{ borderLeft: "1px solid rgba(67,70,84,0.1)" }}
+            className="sticky top-20 bg-surface-container-low rounded-xl p-6 shadow-2xl space-y-8 border-l border-outline-variant/10"
           >
             {/* Panel header */}
             <div className="flex justify-between items-start">
@@ -124,8 +116,8 @@ export default function FeedLoading() {
             <div className="space-y-4">
               <div className="h-3 w-28 bg-muted rounded" />
               <div className="flex flex-wrap gap-2">
-                {[88, 100, 128, 96].map((w, i) => (
-                  <div key={i} className="h-7 bg-muted rounded-sm" style={{ width: w }} />
+                {(["w-[88px]", "w-[100px]", "w-32", "w-24"] as const).map((w, i) => (
+                  <div key={i} className={`h-7 bg-muted rounded-sm ${w}`} />
                 ))}
               </div>
             </div>
@@ -137,7 +129,7 @@ export default function FeedLoading() {
             </div>
 
             {/* In the news */}
-            <div className="pt-8 space-y-6" style={{ borderTop: "1px solid rgba(67,70,84,0.15)" }}>
+            <div className="pt-8 space-y-6 border-t border-outline-variant/15">
               <div className="h-3 w-24 bg-muted rounded" />
               {[0, 1, 2].map((i) => (
                 <div key={i} className="flex gap-4">
