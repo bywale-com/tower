@@ -266,7 +266,7 @@ export default async function FeedPage({
             {/* CTAs */}
             <div className="grid grid-cols-2 gap-4">
               <Link
-                href={spaceSlug ? `/app/intelligence?space=${spaceSlug}` : "/app/intelligence"}
+                href={spaceSlug ? `/app/intelligence/${spaceSlug}` : "/app/discover"}
                 className="bg-primary-container text-on-primary-container py-3 rounded-sm font-bold text-xs uppercase tracking-widest text-center hover:opacity-90 transition-all active:scale-[0.98]"
               >
                 Explore Topic

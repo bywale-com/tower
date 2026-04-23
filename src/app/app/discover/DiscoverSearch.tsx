@@ -35,7 +35,7 @@ export default function DiscoverSearch({
     setFocused(false);
     startTransition(async () => {
       await logSearch(label);
-      router.push(`/app/feed?space=${slug}`);
+      router.push(`/app/intelligence/${slug}`);
     });
   }
 
