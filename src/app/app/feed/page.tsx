@@ -82,7 +82,7 @@ export default async function FeedPage({
         .from("surfaces")
         .select("id, username, space")
         .in("id", surfaceIds)
-    : { data: [], error: null };
+    : { data: [] };
 
   const surfacesById = new Map<string, SurfaceRow>(
     ((surfacesData ?? []) as SurfaceRow[]).map((surface) => [surface.id, surface])
