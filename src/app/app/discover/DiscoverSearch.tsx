@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { logSearch } from "./actions";
+import { logSearch, logEnrichRequest } from "./actions";
 
 type TrendingTopic = { id: string; label: string; velocity_score: number | null };
 type Topic = { id: string; slug: string; title: string };
@@ -140,6 +140,7 @@ export default function DiscoverSearch({
 
   async function confirmEnrich() {
     setEnrichState({ phase: "enriching", jobId: "", slug: "", stage: "queued" });
+    await logEnrichRequest(query.trim());
 
     try {
       const res = await fetch("/api/topics/enrich", {
@@ -186,6 +187,7 @@ export default function DiscoverSearch({
     e.preventDefault();
     const trimmed = query.trim().toLowerCase();
     if (!trimmed) return;
+    logSearch(query.trim());
     const match =
       topics.find((t) => t.title.toLowerCase() === trimmed || t.slug === trimmed) ??
       filtered[0];
