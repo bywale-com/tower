@@ -67,7 +67,7 @@ export default async function FeedPage({
     postsQuery = postsQuery.eq("space_id", spaceId);
   }
 
-  const { data: postsData, error: postsError } = await postsQuery;
+  const { data: postsData } = await postsQuery;
 
   const surfaceIds = Array.from(
     new Set(
@@ -77,7 +77,7 @@ export default async function FeedPage({
     )
   );
 
-  const { data: surfacesData, error: surfacesError } = surfaceIds.length
+  const { data: surfacesData } = surfaceIds.length
     ? await supabase
         .from("surfaces")
         .select("id, username, space")
