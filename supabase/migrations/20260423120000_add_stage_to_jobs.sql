@@ -1,0 +1,1 @@
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS stage text DEFAULT 'queued';
