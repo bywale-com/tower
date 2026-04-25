@@ -126,3 +126,28 @@ export function asString(value: unknown): string | null {
 export function asNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
+
+/**
+ * Closes a child jobs row with a terminal status.
+ * Call on success AND in the catch block of every task so orphaned
+ * "running" rows never accumulate.
+ */
+export async function closeJob(
+  jobId: string,
+  status: "completed" | "failed",
+  error?: string,
+): Promise<void> {
+  try {
+    const supabase = getSupabaseAdmin();
+    await supabase
+      .from("jobs")
+      .update({
+        status,
+        completed_at: new Date().toISOString(),
+        ...(error ? { error } : {}),
+      })
+      .eq("id", jobId);
+  } catch {
+    // Best-effort — never let a DB write failure mask the original error
+  }
+}

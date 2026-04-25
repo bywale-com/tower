@@ -1,8 +1,9 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { asString, getSupabaseAdmin, openAiJson } from "./helpers";
+import { asString, closeJob, getSupabaseAdmin, openAiJson } from "./helpers";
 
 export type GenerateSummaryPayload = {
   postId: string;
+  jobId?: string;
 };
 
 export type GenerateSummaryResult = {
@@ -25,6 +26,7 @@ function summaryGuard(payload: Record<string, unknown>): SummaryPayload {
 export const generateSummaryTask = task({
   id: "generate-summary",
   run: async (payload: GenerateSummaryPayload): Promise<GenerateSummaryResult> => {
+    try {
     const supabase = getSupabaseAdmin();
     const { data: post, error: postError } = await supabase
       .from("posts")
@@ -55,6 +57,12 @@ export const generateSummaryTask = task({
       .eq("id", payload.postId);
     if (updateError) throw updateError;
 
-    return { title: summary.title, summary: summary.read };
+    const result = { title: summary.title, summary: summary.read };
+    if (payload.jobId) await closeJob(payload.jobId, "completed");
+    return result;
+    } catch (err) {
+      if (payload.jobId) await closeJob(payload.jobId, "failed", (err as Error).message);
+      throw err;
+    }
   },
 });
