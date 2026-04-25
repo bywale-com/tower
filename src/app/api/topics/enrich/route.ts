@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { tasks } from "@trigger.dev/sdk/v3";
 import { createServiceClient, createClient } from "@/lib/supabase/server";
 
 function slugify(text: string): string {
@@ -88,8 +89,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create job" }, { status: 500 });
   }
 
-  // TODO(@trigger.dev): Fire enrichment task once #13 (Trigger.dev migration) is complete.
-  // await tasks.trigger("enrich-topic", { jobId: job.id, topicId: topic.id, slug, query });
+  await tasks.trigger("enrich-topic", { jobId: job.id, topicId: topic.id, slug, query });
 
   return NextResponse.json({ jobId: job.id, topicSlug: slug });
 }
