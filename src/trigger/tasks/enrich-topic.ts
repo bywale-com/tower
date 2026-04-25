@@ -11,15 +11,15 @@
  * This task owns all jobs table stage updates and fan-out tracking.
  * It calls the other tasks by name but never touches their internal logic.
  *
- * NOTE: Trigger.dev SDK is not yet installed (#13). This file is
- * architecturally complete and ready to run once `@trigger.dev/sdk`
- * is added and `trigger.config.ts` is configured.
+ * NOTE: This task is the Trigger.dev orchestrator entrypoint.
  */
 
-// TODO(@trigger.dev #13): uncomment once SDK is installed
-// import { task, tasks } from "@trigger.dev/sdk/v3";
+import { task, tasks } from "@trigger.dev/sdk/v3";
 
 import { createServiceClient } from "@/lib/supabase/server";
+import type { FindProfilesResult } from "./find-profiles";
+import type { ClassifyResult } from "./classify-and-create-surfaces";
+import type { ScrapePostsResult } from "./scrape-posts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -102,29 +102,42 @@ async function incrementCompletedChildren(parentJobId: string): Promise<void> {
   await supabase.rpc("increment_completed_children", { job_id: parentJobId });
 }
 
+function getTaskOutput<T>(result: unknown, taskId: string): T {
+  if (
+    typeof result === "object" &&
+    result !== null &&
+    "ok" in result &&
+    (result as { ok: boolean }).ok === true &&
+    "output" in result
+  ) {
+    return (result as { output: T }).output;
+  }
+
+  const message =
+    typeof result === "object" &&
+    result !== null &&
+    "error" in result &&
+    typeof (result as { error?: unknown }).error === "string"
+      ? (result as { error: string }).error
+      : `Task ${taskId} failed`;
+  throw new Error(message);
+}
+
 // ---------------------------------------------------------------------------
 // Main orchestrator
 // ---------------------------------------------------------------------------
 
-// TODO(@trigger.dev #13): wrap in `export const enrichTopicTask = task({ ... })`
 export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
   const { jobId, topicId, slug, query } = payload;
-  void slug;
-  void query;
   const supabase = createServiceClient();
 
   try {
     // ── Step 1: Find Instagram profiles ──────────────────────────────────────
     await setStage(jobId, "finding_creators");
 
-    // TODO(@trigger.dev #13): replace with: const { profiles } = await tasks.triggerAndWait("find-profiles", { query });
-    const profiles: Array<{
-      username: string;
-      fullName: string;
-      biography: string;
-      followersCount: number;
-      profilePicUrl?: string;
-    }> = [];
+    const { profiles } = getTaskOutput<FindProfilesResult>(await tasks.triggerAndWait("find-profiles", {
+      query,
+    }), "find-profiles");
 
     if (profiles.length === 0) {
       await markFailed(jobId, "No profiles found for query");
@@ -134,11 +147,15 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     // ── Step 2: Classify profiles and create surfaces ────────────────────────
     await setStage(jobId, "creating_surfaces");
 
-    // TODO(@trigger.dev #13): replace with:
-    // const { surfaceIds } = await tasks.triggerAndWait("classify-and-create-surfaces", {
-    //   topicId, topicSlug: slug, query, profiles,
-    // });
-    const surfaceIds: string[] = [];
+    const { surfaceIds } = getTaskOutput<ClassifyResult>(
+      await tasks.triggerAndWait("classify-and-create-surfaces", {
+      topicId,
+      topicSlug: slug,
+      query,
+      profiles,
+    }),
+      "classify-and-create-surfaces",
+    );
 
     if (surfaceIds.length === 0) {
       await markFailed(jobId, "No relevant surfaces found after classification");
@@ -157,14 +174,14 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     const postIds: string[] = [];
 
     for (const surface of surfaces ?? []) {
-      const childJobId = await createChildJob(jobId, "scrape-posts", surface.id);
-      void childJobId;
-
-      // TODO(@trigger.dev #13): replace with:
-      // const { postIds: ids } = await tasks.triggerAndWait("scrape-posts", {
-      //   jobId: childJobId, surfaceId: surface.id, username: surface.username,
-      // });
-      const ids: string[] = [];
+      await createChildJob(jobId, "scrape-posts", surface.id);
+      if (!surface.username) {
+        throw new Error(`Surface ${surface.id} is missing username`);
+      }
+      const { postIds: ids } = getTaskOutput<ScrapePostsResult>(await tasks.triggerAndWait("scrape-posts", {
+        surfaceId: surface.id,
+        username: surface.username,
+      }), "scrape-posts");
       postIds.push(...ids);
 
       await incrementCompletedChildren(jobId);
@@ -179,16 +196,15 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     await setStage(jobId, "scoring_signals", { total_children: postIds.length, completed_children: 0 });
 
     for (const postId of postIds) {
-      const signalJobId = await createChildJob(jobId, "analyze-signals", postId);
-      const summaryJobId = await createChildJob(jobId, "generate-summary", postId);
+      await createChildJob(jobId, "analyze-signals", postId);
+      await createChildJob(jobId, "generate-summary", postId);
 
-      // TODO(@trigger.dev #13): replace with parallel fan-out:
-      // await Promise.all([
-      //   tasks.triggerAndWait("analyze-signals",   { jobId: signalJobId,  postId }),
-      //   tasks.triggerAndWait("generate-summary",  { jobId: summaryJobId, postId }),
-      // ]);
-      void signalJobId;
-      void summaryJobId;
+      const [analyzeResult, summaryResult] = await Promise.all([
+        tasks.triggerAndWait("analyze-signals", { postId }),
+        tasks.triggerAndWait("generate-summary", { postId }),
+      ]);
+      getTaskOutput(analyzeResult, "analyze-signals");
+      getTaskOutput(summaryResult, "generate-summary");
 
       await incrementCompletedChildren(jobId);
     }
@@ -196,8 +212,7 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     // ── Step 5: Recompute topic-level scores ─────────────────────────────────
     await setStage(jobId, "recomputing");
 
-    // TODO(@trigger.dev #13): replace with:
-    // await tasks.triggerAndWait("recompute-scores", { jobId, topicId });
+    getTaskOutput(await tasks.triggerAndWait("recompute-scores", { topicId }), "recompute-scores");
 
     // ── Step 6: Mark complete ─────────────────────────────────────────────────
     await setStage(jobId, "ready");
@@ -218,3 +233,10 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     throw err; // re-throw so Trigger.dev can retry
   }
 }
+
+export const enrichTopicTask = task({
+  id: "enrich-topic",
+  run: async (payload: EnrichTopicPayload): Promise<void> => {
+    await enrichTopic(payload);
+  },
+});
