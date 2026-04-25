@@ -109,6 +109,8 @@ async function incrementCompletedChildren(parentJobId: string): Promise<void> {
 // TODO(@trigger.dev #13): wrap in `export const enrichTopicTask = task({ ... })`
 export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
   const { jobId, topicId, slug, query } = payload;
+  void slug;
+  void query;
   const supabase = createServiceClient();
 
   try {
@@ -156,6 +158,7 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
 
     for (const surface of surfaces ?? []) {
       const childJobId = await createChildJob(jobId, "scrape-posts", surface.id);
+      void childJobId;
 
       // TODO(@trigger.dev #13): replace with:
       // const { postIds: ids } = await tasks.triggerAndWait("scrape-posts", {
