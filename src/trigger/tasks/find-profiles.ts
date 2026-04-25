@@ -1,5 +1,11 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { apifyGetDatasetItems, apifyRunActor, asNumber, asString } from "./helpers";
+import {
+  apifyGetDatasetItems,
+  apifyRunActor,
+  apifyWaitForRunCompletion,
+  asNumber,
+  asString,
+} from "./helpers";
 
 export type FindProfilesPayload = {
   query: string;
@@ -24,6 +30,7 @@ export const findProfilesTask = task({
       maxProfilesPerQuery: payload.maxProfiles ?? 50,
     });
 
+    await apifyWaitForRunCompletion(run.runId);
     const items = await apifyGetDatasetItems(run.datasetId);
     const profiles = items
       .map((item) => {

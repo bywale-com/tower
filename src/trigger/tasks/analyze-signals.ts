@@ -35,7 +35,7 @@ function classifyGuard(payload: Record<string, unknown>): SignalClassification {
 
 function extractComments(
   raw: unknown,
-): Array<{ text: string; commenter_username: string | null; comment_timestamp: string | null; replies: unknown }> {
+): Array<{ text: string; commenter_username: string | null; commented_at: string | null; replies: unknown }> {
   if (!raw || typeof raw !== "object") return [];
   const data = (raw as { data?: unknown }).data;
   if (!Array.isArray(data)) return [];
@@ -47,7 +47,7 @@ function extractComments(
       return {
         text,
         commenter_username: asString(record.ownerUsername),
-        comment_timestamp: asString(record.timestamp),
+        commented_at: asString(record.timestamp),
         replies: record.replies ?? [],
       };
     })
@@ -71,12 +71,12 @@ export const analyzeSignalsTask = task({
     const inserts: Array<{
       post_id: string;
       surface_id: string;
-      comment_text: string;
+      text: string;
       commenter_username: string | null;
       urgency_score: number;
       intent_label: string;
       is_answered: "true" | "false" | "privated";
-      comment_timestamp: string | null;
+      commented_at: string | null;
     }> = [];
 
     for (const comment of comments) {
@@ -96,12 +96,12 @@ export const analyzeSignalsTask = task({
       inserts.push({
         post_id: post.id,
         surface_id: post.surface_id,
-        comment_text: classification.comment || comment.text,
+        text: classification.comment || comment.text,
         commenter_username: comment.commenter_username,
         urgency_score: classification.urgency_score,
         intent_label: classification.intent_label,
         is_answered: classification.is_answered,
-        comment_timestamp: comment.comment_timestamp,
+        commented_at: comment.commented_at,
       });
     }
 

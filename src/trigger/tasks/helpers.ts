@@ -48,6 +48,29 @@ export async function apifyGetDatasetItems(datasetId: string): Promise<unknown[]
   return list.items;
 }
 
+export async function apifyWaitForRunCompletion(
+  runId: string,
+  pollMs = 2000,
+  timeoutMs = 10 * 60 * 1000,
+): Promise<void> {
+  const client = new ApifyClient({ token: getTaskEnv().APIFY_TOKEN });
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    const run = await client.run(runId).get();
+    const status = run?.status;
+
+    if (status === "SUCCEEDED") return;
+    if (status === "FAILED" || status === "ABORTED" || status === "TIMED-OUT") {
+      throw new Error(`Apify run ${runId} ended with status: ${status}`);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, pollMs));
+  }
+
+  throw new Error(`Timed out waiting for Apify run completion: ${runId}`);
+}
+
 export function parseJsonObject(value: string): JsonRecord {
   try {
     const parsed = JSON.parse(value) as unknown;

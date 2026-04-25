@@ -50,19 +50,18 @@ export const classifyAndCreateSurfacesTask = task({
     if (relevantProfiles.length === 0) return { surfaceIds: [] };
 
     const upsertRows = relevantProfiles.map((profile) => ({
-      topic_id: payload.topicId,
       username: profile.username,
       full_name: profile.fullName,
-      bio: profile.biography,
-      follower_count: profile.followersCount,
-      profile_pic_url: profile.profilePicUrl ?? null,
+      biography: profile.biography,
+      followers: profile.followersCount,
+      avatar_url: profile.profilePicUrl ?? null,
       status: "pending",
     }));
 
     const { data, error } = await supabase
       .from("surfaces")
       .upsert(upsertRows, {
-        onConflict: "topic_id,username",
+        onConflict: "username",
       })
       .select("id");
 

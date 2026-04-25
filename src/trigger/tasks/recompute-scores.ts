@@ -40,7 +40,7 @@ export const recomputeScoresTask = task({
 
       const { error: updateSurfaceError } = await supabase
         .from("surfaces")
-        .update({ urgency_score: surfaceUrgencyScore })
+        .update({ avg_urgency_score: surfaceUrgencyScore })
         .eq("id", surfaceId);
       if (updateSurfaceError) throw updateSurfaceError;
       surfacesUpdated += 1;

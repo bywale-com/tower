@@ -1,5 +1,12 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { apifyGetDatasetItems, apifyRunActor, asNumber, asString, getSupabaseAdmin } from "./helpers";
+import {
+  apifyGetDatasetItems,
+  apifyRunActor,
+  apifyWaitForRunCompletion,
+  asNumber,
+  asString,
+  getSupabaseAdmin,
+} from "./helpers";
 
 export type ScrapePostsPayload = {
   surfaceId: string;
@@ -19,18 +26,20 @@ export const scrapePostsTask = task({
       directUrls: [`https://www.instagram.com/${payload.username}/`],
       resultsLimit: payload.maxPosts ?? 30,
     });
+
+    await apifyWaitForRunCompletion(run.runId);
     const items = await apifyGetDatasetItems(run.datasetId);
 
     const rows = items
       .map((item) => {
         const post = item as Record<string, unknown>;
-        const shortcode = asString(post.shortCode) ?? asString(post.shortcode);
-        if (!shortcode) return null;
+        const platformPostId = asString(post.shortCode) ?? asString(post.shortcode);
+        if (!platformPostId) return null;
         return {
-          shortcode,
+          platform_post_id: platformPostId,
           surface_id: payload.surfaceId,
           caption: asString(post.caption),
-          likes_count: asNumber(post.likesCount) ?? 0,
+          like_count: asNumber(post.likesCount) ?? 0,
           comments_count: asNumber(post.commentsCount) ?? 0,
           view_count: asNumber(post.videoViewCount),
           posted_at: asString(post.timestamp),
@@ -42,7 +51,7 @@ export const scrapePostsTask = task({
 
     if (rows.length > 0) {
       const { error } = await supabase.from("posts").upsert(rows, {
-        onConflict: "shortcode",
+        onConflict: "platform_post_id",
       });
       if (error) throw error;
     }
@@ -52,8 +61,8 @@ export const scrapePostsTask = task({
       .select("id")
       .eq("surface_id", payload.surfaceId)
       .in(
-        "shortcode",
-        rows.map((row) => row.shortcode),
+        "platform_post_id",
+        rows.map((row) => row.platform_post_id),
       );
     if (postError) throw postError;
 
