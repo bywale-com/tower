@@ -85,6 +85,7 @@ Return {"is_relevant": boolean, "confidence": number, "space_slug": string|null}
       followers: profile.followersCount,
       avatar_url: profile.profilePicUrl ?? null,
       space_id: spaceSlug ? spaceIdBySlug.get(spaceSlug) ?? null : null,
+      topic_id: payload.topicId,
       status: "pending",
     }));
 
