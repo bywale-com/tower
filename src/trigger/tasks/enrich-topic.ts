@@ -174,13 +174,14 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     const postIds: string[] = [];
 
     for (const surface of surfaces ?? []) {
-      await createChildJob(jobId, "scrape-posts", surface.id);
+      const scrapeJobId = await createChildJob(jobId, "scrape-posts", surface.id);
       if (!surface.username) {
         throw new Error(`Surface ${surface.id} is missing username`);
       }
       const { postIds: ids } = getTaskOutput<ScrapePostsResult>(await tasks.triggerAndWait("scrape-posts", {
         surfaceId: surface.id,
         username: surface.username,
+        jobId: scrapeJobId,
       }), "scrape-posts");
       postIds.push(...ids);
 
@@ -196,12 +197,12 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     await setStage(jobId, "scoring_signals", { total_children: postIds.length, completed_children: 0 });
 
     for (const postId of postIds) {
-      await createChildJob(jobId, "analyze-signals", postId);
-      await createChildJob(jobId, "generate-summary", postId);
+      const analyzeJobId = await createChildJob(jobId, "analyze-signals", postId);
+      const summaryJobId = await createChildJob(jobId, "generate-summary", postId);
 
       const [analyzeResult, summaryResult] = await Promise.all([
-        tasks.triggerAndWait("analyze-signals", { postId }),
-        tasks.triggerAndWait("generate-summary", { postId }),
+        tasks.triggerAndWait("analyze-signals", { postId, jobId: analyzeJobId }),
+        tasks.triggerAndWait("generate-summary", { postId, jobId: summaryJobId }),
       ]);
       getTaskOutput(analyzeResult, "analyze-signals");
       getTaskOutput(summaryResult, "generate-summary");
@@ -212,7 +213,7 @@ export async function enrichTopic(payload: EnrichTopicPayload): Promise<void> {
     // ── Step 5: Recompute topic-level scores ─────────────────────────────────
     await setStage(jobId, "recomputing");
 
-    getTaskOutput(await tasks.triggerAndWait("recompute-scores", { topicId }), "recompute-scores");
+    getTaskOutput(await tasks.triggerAndWait("recompute-scores", { topicId, jobId }), "recompute-scores");
 
     // ── Step 6: Mark complete ─────────────────────────────────────────────────
     await setStage(jobId, "ready");

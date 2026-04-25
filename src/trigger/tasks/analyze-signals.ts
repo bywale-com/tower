@@ -1,5 +1,5 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { asNumber, asString, getSupabaseAdmin, openAiJson } from "./helpers";
+import { asNumber, asString, closeJob, getSupabaseAdmin, openAiJson } from "./helpers";
 
 type PostRow = { id: string; surface_id: string; caption: string | null; latest_comments: unknown; surfaces: { username: string | null } | null };
 
@@ -13,6 +13,7 @@ type SignalClassification = {
 
 export type AnalyzeSignalsPayload = {
   postId: string;
+  jobId?: string;
 };
 
 export type AnalyzeSignalsResult = {
@@ -57,6 +58,7 @@ function extractComments(
 export const analyzeSignalsTask = task({
   id: "analyze-signals",
   run: async (payload: AnalyzeSignalsPayload): Promise<AnalyzeSignalsResult> => {
+    try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from("posts")
@@ -120,6 +122,12 @@ export const analyzeSignalsTask = task({
       .eq("id", post.id);
     if (postUpdateError) throw postUpdateError;
 
-    return { signalCount: inserts.length, highUrgencyCount };
+    const result = { signalCount: inserts.length, highUrgencyCount };
+    if (payload.jobId) await closeJob(payload.jobId, "completed");
+    return result;
+    } catch (err) {
+      if (payload.jobId) await closeJob(payload.jobId, "failed", (err as Error).message);
+      throw err;
+    }
   },
 });

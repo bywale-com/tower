@@ -5,6 +5,7 @@ import {
   apifyWaitForRunCompletion,
   asNumber,
   asString,
+  closeJob,
   getSupabaseAdmin,
 } from "./helpers";
 
@@ -12,6 +13,7 @@ export type ScrapePostsPayload = {
   surfaceId: string;
   username: string;
   maxPosts?: number;
+  jobId?: string;
 };
 
 export type ScrapePostsResult = {
@@ -21,6 +23,7 @@ export type ScrapePostsResult = {
 export const scrapePostsTask = task({
   id: "scrape-posts",
   run: async (payload: ScrapePostsPayload): Promise<ScrapePostsResult> => {
+    try {
     const supabase = getSupabaseAdmin();
     const run = await apifyRunActor("apify~instagram-post-scraper", {
       directUrls: [`https://www.instagram.com/${payload.username}/`],
@@ -72,6 +75,12 @@ export const scrapePostsTask = task({
       .eq("id", payload.surfaceId);
     if (surfaceError) throw surfaceError;
 
-    return { postIds: (postData ?? []).map((row) => (row as { id: string }).id) };
+    const result = { postIds: (postData ?? []).map((row) => (row as { id: string }).id) };
+    if (payload.jobId) await closeJob(payload.jobId, "completed");
+    return result;
+    } catch (err) {
+      if (payload.jobId) await closeJob(payload.jobId, "failed", (err as Error).message);
+      throw err;
+    }
   },
 });

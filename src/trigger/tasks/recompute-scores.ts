@@ -1,8 +1,9 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { asNumber, getSupabaseAdmin } from "./helpers";
+import { asNumber, closeJob, getSupabaseAdmin } from "./helpers";
 
 export type RecomputePayload = {
   topicId: string;
+  jobId?: string;
 };
 
 export type RecomputeResult = {
@@ -13,6 +14,7 @@ export type RecomputeResult = {
 export const recomputeScoresTask = task({
   id: "recompute-scores",
   run: async (payload: RecomputePayload): Promise<RecomputeResult> => {
+    try {
     const supabase = getSupabaseAdmin();
     const { data: surfaces, error: surfacesError } = await supabase
       .from("surfaces")
@@ -61,6 +63,12 @@ export const recomputeScoresTask = task({
       .eq("id", payload.topicId);
     if (topicUpdateError) throw topicUpdateError;
 
-    return { topicUrgencyScore, surfacesUpdated };
+    const result = { topicUrgencyScore, surfacesUpdated };
+    if (payload.jobId) await closeJob(payload.jobId, "completed");
+    return result;
+    } catch (err) {
+      if (payload.jobId) await closeJob(payload.jobId, "failed", (err as Error).message);
+      throw err;
+    }
   },
 });
