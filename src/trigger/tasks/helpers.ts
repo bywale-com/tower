@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { ApifyClient } from "apify-client";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -30,26 +31,10 @@ export async function apifyRunActor<TInput extends JsonRecord>(
   actor: string,
   input: TInput,
 ): Promise<{ runId: string; datasetId: string }> {
-  const { APIFY_TOKEN } = getTaskEnv();
-  const runResponse = await fetch(
-    `https://api.apify.com/v2/acts/${actor}/runs?token=${APIFY_TOKEN}`,
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(input),
-    },
-  );
-
-  if (!runResponse.ok) {
-    const body = await runResponse.text();
-    throw new Error(`Apify run failed (${actor}): ${runResponse.status} ${body}`);
-  }
-
-  const runJson = (await runResponse.json()) as {
-    data?: { id?: string; defaultDatasetId?: string };
-  };
-  const runId = runJson.data?.id;
-  const datasetId = runJson.data?.defaultDatasetId;
+  const client = new ApifyClient({ token: getTaskEnv().APIFY_TOKEN });
+  const run = await client.actor(actor).call(input);
+  const runId = run.id;
+  const datasetId = run.defaultDatasetId;
   if (!runId || !datasetId) {
     throw new Error(`Apify run missing ids for actor: ${actor}`);
   }
@@ -58,18 +43,9 @@ export async function apifyRunActor<TInput extends JsonRecord>(
 }
 
 export async function apifyGetDatasetItems(datasetId: string): Promise<unknown[]> {
-  const { APIFY_TOKEN } = getTaskEnv();
-  const response = await fetch(
-    `https://api.apify.com/v2/datasets/${datasetId}/items?clean=true&token=${APIFY_TOKEN}`,
-  );
-
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Apify dataset fetch failed: ${response.status} ${body}`);
-  }
-
-  const data = (await response.json()) as unknown;
-  return Array.isArray(data) ? data : [];
+  const client = new ApifyClient({ token: getTaskEnv().APIFY_TOKEN });
+  const list = await client.dataset(datasetId).listItems({ clean: true });
+  return list.items;
 }
 
 export function parseJsonObject(value: string): JsonRecord {

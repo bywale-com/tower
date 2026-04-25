@@ -1,5 +1,5 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { asString, getSupabaseAdmin, openAiJson } from "./helpers";
+import { getSupabaseAdmin, openAiJson } from "./helpers";
 
 type Profile = {
   username: string;
@@ -22,14 +22,14 @@ export type ClassifyResult = {
 
 type Classification = {
   is_relevant: boolean;
-  confidence: "high" | "medium" | "low";
+  confidence: number;
 };
 
 function guardClassification(payload: Record<string, unknown>): Classification {
-  const confidence = asString(payload.confidence);
-  const normalized: "high" | "medium" | "low" =
-    confidence === "high" || confidence === "medium" || confidence === "low" ? confidence : "low";
-  return { is_relevant: payload.is_relevant === true, confidence: normalized };
+  const confidenceRaw = payload.confidence;
+  const confidence =
+    typeof confidenceRaw === "number" && Number.isFinite(confidenceRaw) ? confidenceRaw : 0;
+  return { is_relevant: payload.is_relevant === true, confidence };
 }
 
 export const classifyAndCreateSurfacesTask = task({
@@ -41,7 +41,7 @@ export const classifyAndCreateSurfacesTask = task({
     for (const profile of payload.profiles) {
       const result = await openAiJson(
         "Classify profile relevance to the topic. Return strict JSON only.",
-        `Topic slug: ${payload.topicSlug}\nQuery: ${payload.query}\nUsername: ${profile.username}\nFull name: ${profile.fullName}\nBiography: ${profile.biography}\nReturn {"is_relevant": boolean, "confidence": "high|medium|low"}.`,
+        `Topic slug: ${payload.topicSlug}\nQuery: ${payload.query}\nUsername: ${profile.username}\nFull name: ${profile.fullName}\nBiography: ${profile.biography}\nReturn {"is_relevant": boolean, "confidence": number}.`,
         guardClassification,
       );
       if (result.is_relevant) relevantProfiles.push(profile);
