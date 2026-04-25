@@ -1,21 +1,13 @@
 import { task } from "@trigger.dev/sdk/v3";
 import { asString, getSupabaseAdmin, openAiJson } from "./helpers";
 
-type PostSummaryRow = {
-  id: string;
-  caption: string | null;
-  url: string | null;
-  surface_username: string | null;
+export type GenerateSummaryPayload = {
+  postId: string;
 };
 
-export type GenerateSummaryInput = {
-  postIds?: string[];
-  limit?: number;
-};
-
-export type GenerateSummaryOutput = {
-  postsProcessed: number;
-  postsUpdated: number;
+export type GenerateSummaryResult = {
+  title: string;
+  summary: string;
 };
 
 type SummaryPayload = {
@@ -32,43 +24,37 @@ function summaryGuard(payload: Record<string, unknown>): SummaryPayload {
 
 export const generateSummaryTask = task({
   id: "generate-summary",
-  run: async (payload: GenerateSummaryInput): Promise<GenerateSummaryOutput> => {
+  run: async (payload: GenerateSummaryPayload): Promise<GenerateSummaryResult> => {
     const supabase = getSupabaseAdmin();
-    let query = supabase
+    const { data: post, error: postError } = await supabase
       .from("posts")
-      .select("id, caption, url, surface_username")
-      .is("ai_summary", null)
-      .gt("analyzed_signal_count", 0);
-    if (payload.postIds && payload.postIds.length > 0) query = query.in("id", payload.postIds);
-    const { data, error } = await query.limit(payload.limit ?? 50);
-    if (error) throw error;
+      .select("id, caption")
+      .eq("id", payload.postId)
+      .single();
+    if (postError) throw postError;
 
-    const posts = (data ?? []) as PostSummaryRow[];
-    let postsUpdated = 0;
+    const { data: signals, error: signalsError } = await supabase
+      .from("signals")
+      .select("comment_text, urgency_score, intent_label")
+      .eq("post_id", payload.postId)
+      .order("urgency_score", { ascending: false })
+      .limit(5);
+    if (signalsError) throw signalsError;
 
-    for (const post of posts) {
-      const { data: signals } = await supabase
-        .from("signals")
-        .select("text, urgency_score, intent_label")
-        .eq("post_id", post.id)
-        .order("urgency_score", { ascending: false })
-        .limit(5);
+    const summary = await openAiJson(
+      "You are Tower's post analyzer. Return strict JSON only.",
+      `Post caption: ${(post as { caption: string | null }).caption ?? ""}\nTop signals: ${JSON.stringify(
+        signals ?? [],
+      )}\nReturn {"title": string, "read": string}.`,
+      summaryGuard,
+    );
 
-      const summary = await openAiJson(
-        "You are Tower's post analyzer. Return concise JSON only.",
-        `Post caption: ${post.caption ?? ""}\nPost url: ${post.url ?? ""}\nSurface username: ${
-          post.surface_username ?? ""
-        }\nTop signals: ${JSON.stringify(signals ?? [])}\nReturn {"title": "10-word title", "read": "brief analytic read"}.`,
-        summaryGuard,
-      );
+    const { error: updateError } = await supabase
+      .from("posts")
+      .update({ title: summary.title, ai_summary: summary.read })
+      .eq("id", payload.postId);
+    if (updateError) throw updateError;
 
-      const { error: updateError } = await supabase
-        .from("posts")
-        .update({ title: summary.title, ai_summary: summary.read })
-        .eq("id", post.id);
-      if (!updateError) postsUpdated += 1;
-    }
-
-    return { postsProcessed: posts.length, postsUpdated };
+    return { title: summary.title, summary: summary.read };
   },
 });

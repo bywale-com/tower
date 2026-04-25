@@ -1,13 +1,7 @@
 import { task } from "@trigger.dev/sdk/v3";
 import { asNumber, asString, getSupabaseAdmin, openAiJson } from "./helpers";
 
-type PostRow = {
-  id: string;
-  surface_id: string | null;
-  caption: string | null;
-  latest_comments: unknown;
-  surface_username: string | null;
-};
+type PostRow = { id: string; surface_id: string; caption: string | null; latest_comments: unknown; surfaces: { username: string | null } | null };
 
 type SignalClassification = {
   comment: string;
@@ -17,14 +11,13 @@ type SignalClassification = {
   is_answered: "true" | "false" | "privated";
 };
 
-export type AnalyzeSignalsInput = {
-  postIds?: string[];
-  limit?: number;
+export type AnalyzeSignalsPayload = {
+  postId: string;
 };
 
-export type AnalyzeSignalsOutput = {
-  postsProcessed: number;
-  signalsInserted: number;
+export type AnalyzeSignalsResult = {
+  signalCount: number;
+  highUrgencyCount: number;
 };
 
 function classifyGuard(payload: Record<string, unknown>): SignalClassification {
@@ -40,7 +33,9 @@ function classifyGuard(payload: Record<string, unknown>): SignalClassification {
   };
 }
 
-function extractComments(raw: unknown): Array<{ text: string; commenter_username: string | null; commented_at: string | null; replies: unknown }> {
+function extractComments(
+  raw: unknown,
+): Array<{ text: string; commenter_username: string | null; comment_timestamp: string | null; replies: unknown }> {
   if (!raw || typeof raw !== "object") return [];
   const data = (raw as { data?: unknown }).data;
   if (!Array.isArray(data)) return [];
@@ -52,7 +47,7 @@ function extractComments(raw: unknown): Array<{ text: string; commenter_username
       return {
         text,
         commenter_username: asString(record.ownerUsername),
-        commented_at: asString(record.timestamp),
+        comment_timestamp: asString(record.timestamp),
         replies: record.replies ?? [],
       };
     })
@@ -61,55 +56,70 @@ function extractComments(raw: unknown): Array<{ text: string; commenter_username
 
 export const analyzeSignalsTask = task({
   id: "analyze-signals",
-  run: async (payload: AnalyzeSignalsInput): Promise<AnalyzeSignalsOutput> => {
+  run: async (payload: AnalyzeSignalsPayload): Promise<AnalyzeSignalsResult> => {
     const supabase = getSupabaseAdmin();
-    let query = supabase
+    const { data, error } = await supabase
       .from("posts")
-      .select("id, surface_id, caption, latest_comments, surface_username")
-      .not("latest_comments", "is", null);
-    if (payload.postIds && payload.postIds.length > 0) query = query.in("id", payload.postIds);
-    const { data, error } = await query.limit(payload.limit ?? 50);
+      .select("id, surface_id, caption, latest_comments, surfaces(username)")
+      .eq("id", payload.postId)
+      .single();
     if (error) throw error;
+    const post = data as unknown as PostRow;
+    const ownerUsername = post.surfaces?.username ?? null;
 
-    const posts = (data ?? []) as PostRow[];
-    let signalsInserted = 0;
+    const comments = extractComments(post.latest_comments);
+    const inserts: Array<{
+      post_id: string;
+      surface_id: string;
+      comment_text: string;
+      commenter_username: string | null;
+      urgency_score: number;
+      intent_label: string;
+      is_answered: "true" | "false" | "privated";
+      comment_timestamp: string | null;
+    }> = [];
 
-    for (const post of posts) {
-      const comments = extractComments(post.latest_comments);
-      for (const comment of comments) {
-        if (
-          post.surface_username &&
-          comment.commenter_username &&
-          post.surface_username === comment.commenter_username
-        ) {
-          continue;
-        }
-
-        const classification = await openAiJson(
-          "You are a signal classifier. Return JSON only.",
-          `Caption: ${post.caption ?? ""}\nComment: ${comment.text}\nReplyThread: ${JSON.stringify(
-            comment.replies,
-          )}\nPost creator username: ${post.surface_username ?? ""}\nReturn {"comment": string, "is_signal": boolean, "urgency_score": number, "intent_label": "question|frustration|seeking_help|sharing_experience|other", "is_answered": "true|false|privated"}.`,
-          classifyGuard,
-        );
-
-        if (!classification.is_signal) continue;
-        const { error: insertError } = await supabase.from("signals").insert({
-          post_id: post.id,
-          surface_id: post.surface_id,
-          text: classification.comment || comment.text,
-          commenter_username: comment.commenter_username,
-          platform: "instagram",
-          commented_at: comment.commented_at,
-          urgency_score: classification.urgency_score,
-          intent_label: classification.intent_label,
-          is_answered: classification.is_answered,
-          scraped_at: new Date().toISOString(),
-        });
-        if (!insertError) signalsInserted += 1;
+    for (const comment of comments) {
+      if (ownerUsername && comment.commenter_username && ownerUsername === comment.commenter_username) {
+        continue;
       }
+
+      const classification = await openAiJson(
+        "You are a signal classifier. Return JSON only.",
+        `Caption: ${post.caption ?? ""}\nComment: ${comment.text}\nReply thread: ${JSON.stringify(
+          comment.replies,
+        )}\nCreator username: ${ownerUsername ?? ""}\nReturn {"comment": string, "is_signal": boolean, "urgency_score": number, "intent_label": "question|frustration|seeking_help|sharing_experience|other", "is_answered": "true|false|privated"}.`,
+        classifyGuard,
+      );
+
+      if (!classification.is_signal) continue;
+      inserts.push({
+        post_id: post.id,
+        surface_id: post.surface_id,
+        comment_text: classification.comment || comment.text,
+        commenter_username: comment.commenter_username,
+        urgency_score: classification.urgency_score,
+        intent_label: classification.intent_label,
+        is_answered: classification.is_answered,
+        comment_timestamp: comment.comment_timestamp,
+      });
     }
 
-    return { postsProcessed: posts.length, signalsInserted };
+    if (inserts.length > 0) {
+      const { error: insertError } = await supabase.from("signals").insert(inserts);
+      if (insertError) throw insertError;
+    }
+
+    const highUrgencyCount = inserts.filter((signal) => signal.urgency_score >= 70).length;
+    const { error: postUpdateError } = await supabase
+      .from("posts")
+      .update({
+        analyzed_signal_count: inserts.length,
+        high_urgency_signal_count: highUrgencyCount,
+      })
+      .eq("id", post.id);
+    if (postUpdateError) throw postUpdateError;
+
+    return { signalCount: inserts.length, highUrgencyCount };
   },
 });

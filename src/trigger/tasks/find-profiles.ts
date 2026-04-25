@@ -1,82 +1,63 @@
 import { task } from "@trigger.dev/sdk/v3";
-import {
-  apifyGetDatasetItems,
-  apifyRunActor,
-  asBoolean,
-  asNumber,
-  asString,
-  getSupabaseAdmin,
-} from "./helpers";
+import { apifyGetDatasetItems, apifyRunActor, asNumber, asString } from "./helpers";
 
-export type FindProfilesInput = {
-  searchId: string;
-  keyword: string;
-  country?: string;
-  maxLeads?: number;
+export type FindProfilesPayload = {
+  query: string;
+  maxProfiles?: number;
 };
 
-export type FindProfilesOutput = {
-  searchId: string;
-  runId: string;
-  datasetId: string;
-  insertedCount: number;
+export type FindProfilesResult = {
+  profiles: Array<{
+    username: string;
+    fullName: string;
+    biography: string;
+    followersCount: number;
+    profilePicUrl?: string;
+  }>;
 };
 
 export const findProfilesTask = task({
   id: "find-profiles",
-  run: async (payload: FindProfilesInput): Promise<FindProfilesOutput> => {
-    const supabase = getSupabaseAdmin();
+  run: async (payload: FindProfilesPayload): Promise<FindProfilesResult> => {
     const run = await apifyRunActor("contacts-api~instagram-profile-finder", {
-      keywords: [payload.keyword],
-      country: payload.country ?? "Canada",
-      max_leads: payload.maxLeads ?? 100,
+      searchTerms: [payload.query],
+      maxProfilesPerQuery: payload.maxProfiles ?? 50,
     });
 
     const items = await apifyGetDatasetItems(run.datasetId);
-    const rows = items
+    const profiles = items
       .map((item) => {
         const record = item as Record<string, unknown>;
-        const userId = asString(record.user_id) ?? asString(record.userId);
         const username = asString(record.username);
-        if (!userId || !username) return null;
+        const biography = asString(record.biography);
+        if (!username || !biography) return null;
+
+        const fullName = asString(record.fullName) ?? asString(record.full_name) ?? "";
+        const followersCount =
+          asNumber(record.followersCount) ?? asNumber(record.followers) ?? 0;
+        const profilePicUrl =
+          asString(record.profilePicUrl) ?? asString(record.profile_pic_url) ?? undefined;
+
         return {
-          keyword: payload.keyword,
-          url: asString(record.url),
           username,
-          full_name: asString(record.full_name),
-          biography: asString(record.biography),
-          user_id: userId,
-          followers: asNumber(record.followers),
-          following: asNumber(record.following),
-          post_count: asNumber(record.post_count),
-          is_verified: asBoolean(record.is_verified),
-          is_business_account: asBoolean(record.is_business_account),
-          is_professional_account: asBoolean(record.is_professional_account),
-          external_url: asString(record.external_url),
-          collected_at: new Date().toISOString(),
-          platform: "instagram",
-          scrape_job_url: run.runId,
+          fullName,
+          biography,
+          followersCount,
+          profilePicUrl,
         };
       })
-      .filter((row): row is NonNullable<typeof row> => Boolean(row));
+      .filter(
+        (
+          profile,
+        ): profile is {
+          username: string;
+          fullName: string;
+          biography: string;
+          followersCount: number;
+          profilePicUrl?: string;
+        } => Boolean(profile),
+      );
 
-    if (rows.length > 0) {
-      const { error } = await supabase.from("surfaces").upsert(rows, {
-        onConflict: "user_id",
-      });
-      if (error) throw error;
-    }
-
-    await supabase
-      .from("searches")
-      .update({ status: "profiles_found", last_run_at: new Date().toISOString() })
-      .eq("id", payload.searchId);
-
-    return {
-      searchId: payload.searchId,
-      runId: run.runId,
-      datasetId: run.datasetId,
-      insertedCount: rows.length,
-    };
+    return { profiles };
   },
 });

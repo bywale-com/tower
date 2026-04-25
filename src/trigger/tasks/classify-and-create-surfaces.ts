@@ -1,90 +1,72 @@
 import { task } from "@trigger.dev/sdk/v3";
 import { asString, getSupabaseAdmin, openAiJson } from "./helpers";
 
-type SurfaceRow = {
-  id: string;
-  keyword: string | null;
-  full_name: string | null;
-  biography: string | null;
+type Profile = {
+  username: string;
+  fullName: string;
+  biography: string;
+  followersCount: number;
+  profilePicUrl?: string;
 };
 
-export type ClassifyAndCreateSurfacesInput = {
-  limit?: number;
+export type ClassifyPayload = {
+  topicId: string;
+  topicSlug: string;
+  query: string;
+  profiles: Profile[];
 };
 
-export type ClassifyAndCreateSurfacesOutput = {
-  scannedCount: number;
-  relevantCount: number;
-  irrelevantCount: number;
-  createdSpaces: string[];
+export type ClassifyResult = {
+  surfaceIds: string[];
 };
 
 type Classification = {
-  relevant: boolean;
-  space: string | null;
+  is_relevant: boolean;
   confidence: "high" | "medium" | "low";
 };
 
 function guardClassification(payload: Record<string, unknown>): Classification {
-  const relevant = payload.relevant === true;
-  const space = asString(payload.space);
   const confidence = asString(payload.confidence);
-  const normalized =
+  const normalized: "high" | "medium" | "low" =
     confidence === "high" || confidence === "medium" || confidence === "low" ? confidence : "low";
-  return { relevant, space, confidence: normalized };
+  return { is_relevant: payload.is_relevant === true, confidence: normalized };
 }
 
 export const classifyAndCreateSurfacesTask = task({
   id: "classify-and-create-surfaces",
-  run: async (payload: ClassifyAndCreateSurfacesInput): Promise<ClassifyAndCreateSurfacesOutput> => {
+  run: async (payload: ClassifyPayload): Promise<ClassifyResult> => {
     const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase
-      .from("surfaces")
-      .select("id, keyword, full_name, biography")
-      .is("space", null)
-      .limit(payload.limit ?? 100);
+    const relevantProfiles: Profile[] = [];
 
-    if (error) throw error;
-    const surfaces = (data ?? []) as SurfaceRow[];
-    let relevantCount = 0;
-    let irrelevantCount = 0;
-    const createdSpaces = new Set<string>();
-
-    for (const surface of surfaces) {
+    for (const profile of payload.profiles) {
       const result = await openAiJson(
-        "You classify profile relevance for an immigration intelligence system. Return only strict JSON.",
-        `Keyword: ${surface.keyword ?? ""}\nFull name: ${surface.full_name ?? ""}\nBiography: ${
-          surface.biography ?? ""
-        }\nRespond as {"relevant": boolean, "space": "slug-or-null", "confidence": "high|medium|low"}.`,
+        "Classify profile relevance to the topic. Return strict JSON only.",
+        `Topic slug: ${payload.topicSlug}\nQuery: ${payload.query}\nUsername: ${profile.username}\nFull name: ${profile.fullName}\nBiography: ${profile.biography}\nReturn {"is_relevant": boolean, "confidence": "high|medium|low"}.`,
         guardClassification,
       );
-
-      if (!result.relevant || !result.space) {
-        irrelevantCount += 1;
-        await supabase.from("surfaces").update({ status: "irrelevant" }).eq("id", surface.id);
-        continue;
-      }
-
-      relevantCount += 1;
-      createdSpaces.add(result.space);
-      await supabase.from("spaces").upsert({
-        slug: result.space,
-        title: result.space
-          .split("-")
-          .map((w) => w[0]?.toUpperCase() + w.slice(1))
-          .join(" "),
-      });
-      await supabase
-        .from("surfaces")
-        .update({ status: "active", space: result.space })
-        .eq("id", surface.id);
+      if (result.is_relevant) relevantProfiles.push(profile);
     }
 
-    return {
-      scannedCount: surfaces.length,
-      relevantCount,
-      irrelevantCount,
-      createdSpaces: [...createdSpaces],
-    };
+    if (relevantProfiles.length === 0) return { surfaceIds: [] };
+
+    const upsertRows = relevantProfiles.map((profile) => ({
+      topic_id: payload.topicId,
+      username: profile.username,
+      full_name: profile.fullName,
+      bio: profile.biography,
+      follower_count: profile.followersCount,
+      profile_pic_url: profile.profilePicUrl ?? null,
+      status: "pending",
+    }));
+
+    const { data, error } = await supabase
+      .from("surfaces")
+      .upsert(upsertRows, {
+        onConflict: "topic_id,username",
+      })
+      .select("id");
+
+    if (error) throw error;
+    return { surfaceIds: (data ?? []).map((row) => (row as { id: string }).id) };
   },
 });

@@ -127,7 +127,3 @@ export function asString(value: unknown): string | null {
 export function asNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
-
-export function asBoolean(value: unknown): boolean | null {
-  return typeof value === "boolean" ? value : null;
-}
