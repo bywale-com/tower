@@ -62,7 +62,10 @@ Return {"is_relevant": boolean, "confidence": number, "space_slug": string|null}
     if (relevantProfiles.length === 0) return { surfaceIds: [] };
 
     const spaceIdBySlug = new Map<string, string>();
-    const uniqueSpaceSlugs = [...new Set(relevantProfiles.map((item) => item.spaceSlug).filter(Boolean))];
+    const uniqueSpaceSlugs = relevantProfiles
+      .map((item) => item.spaceSlug)
+      .filter((slug): slug is string => typeof slug === "string" && slug.length > 0)
+      .filter((slug, index, arr) => arr.indexOf(slug) === index);
     for (const slug of uniqueSpaceSlugs) {
       const { data: spaceRow, error: spaceError } = await supabase
         .from("spaces")
