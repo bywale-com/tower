@@ -53,17 +53,7 @@ export const findProfilesTask = task({
           profilePicUrl,
         };
       })
-      .filter(
-        (
-          profile,
-        ): profile is {
-          username: string;
-          fullName: string;
-          biography: string;
-          followersCount: number;
-          profilePicUrl?: string;
-        } => Boolean(profile),
-      );
+      .filter((profile): profile is NonNullable<typeof profile> => profile !== null);
 
     return { profiles };
   },
