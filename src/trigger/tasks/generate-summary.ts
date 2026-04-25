@@ -35,7 +35,7 @@ export const generateSummaryTask = task({
 
     const { data: signals, error: signalsError } = await supabase
       .from("signals")
-      .select("comment_text, urgency_score, intent_label")
+      .select("text, urgency_score, intent_label")
       .eq("post_id", payload.postId)
       .order("urgency_score", { ascending: false })
       .limit(5);
