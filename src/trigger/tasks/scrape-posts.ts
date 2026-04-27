@@ -26,8 +26,10 @@ export const scrapePostsTask = task({
     try {
     const supabase = getSupabaseAdmin();
     const run = await apifyRunActor("apify~instagram-post-scraper", {
-      directUrls: [`https://www.instagram.com/${payload.username}/`],
+      username: [`https://www.instagram.com/${payload.username}/`],
       resultsLimit: payload.maxPosts ?? 30,
+      skipPinnedPosts: false,
+      dataDetailLevel: "basicData" as const,
     });
 
     await apifyWaitForRunCompletion(run.runId);

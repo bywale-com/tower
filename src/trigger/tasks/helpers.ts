@@ -11,18 +11,37 @@ function getEnv(name: string): string {
   return value;
 }
 
-export function getTaskEnv() {
-  return {
-    APIFY_TOKEN: getEnv("APIFY_TOKEN"),
-    OPENAI_API_KEY: getEnv("OPENAI_API_KEY"),
-    SUPABASE_URL: getEnv("SUPABASE_URL"),
-    SUPABASE_SERVICE_ROLE_KEY: getEnv("SUPABASE_SERVICE_ROLE_KEY"),
-  };
+/** Token for Apify API (actors, datasets). Not the same as Trigger's TRIGGER_SECRET_KEY. */
+export function getApifyToken(): string {
+  const raw =
+    process.env.APIFY_TOKEN ?? process.env.APIFY_API_TOKEN ?? undefined;
+  if (raw === undefined) {
+    throw new Error(
+      "APIFY_TOKEN is not set. Add it to `.env` or `.env.local` in the project root (same folder as trigger.config.ts), restart `npx trigger.dev dev`, or add it under Environment variables in the Trigger.dev dashboard for deployed runs. Create a token in Apify: Integrations → API tokens.",
+    );
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    throw new Error(
+      "APIFY_TOKEN is set but empty (blank). Replace the value with your Apify API token from https://console.apify.com/account/integrations — then restart the Trigger dev worker.",
+    );
+  }
+  return trimmed;
+}
+
+/** Project URL: dedicated var or the same value exposed to the browser. */
+export function getSupabaseUrl(): string {
+  const fromDedicated = process.env.SUPABASE_URL?.trim();
+  if (fromDedicated) return fromDedicated;
+  const fromPublic = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  if (fromPublic) return fromPublic;
+  throw new Error(
+    "Missing required environment variable: SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)",
+  );
 }
 
 export function getSupabaseAdmin() {
-  const env = getTaskEnv();
-  return createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+  return createClient(getSupabaseUrl(), getEnv("SUPABASE_SERVICE_ROLE_KEY"), {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
@@ -31,7 +50,7 @@ export async function apifyRunActor<TInput extends JsonRecord>(
   actor: string,
   input: TInput,
 ): Promise<{ runId: string; datasetId: string }> {
-  const client = new ApifyClient({ token: getTaskEnv().APIFY_TOKEN });
+  const client = new ApifyClient({ token: getApifyToken() });
   const run = await client.actor(actor).call(input);
   const runId = run.id;
   const datasetId = run.defaultDatasetId;
@@ -43,7 +62,7 @@ export async function apifyRunActor<TInput extends JsonRecord>(
 }
 
 export async function apifyGetDatasetItems(datasetId: string): Promise<unknown[]> {
-  const client = new ApifyClient({ token: getTaskEnv().APIFY_TOKEN });
+  const client = new ApifyClient({ token: getApifyToken() });
   const list = await client.dataset(datasetId).listItems({ clean: true });
   return list.items;
 }
@@ -53,7 +72,7 @@ export async function apifyWaitForRunCompletion(
   pollMs = 2000,
   timeoutMs = 10 * 60 * 1000,
 ): Promise<void> {
-  const client = new ApifyClient({ token: getTaskEnv().APIFY_TOKEN });
+  const client = new ApifyClient({ token: getApifyToken() });
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
@@ -62,7 +81,13 @@ export async function apifyWaitForRunCompletion(
 
     if (status === "SUCCEEDED") return;
     if (status === "FAILED" || status === "ABORTED" || status === "TIMED-OUT") {
-      throw new Error(`Apify run ${runId} ended with status: ${status}`);
+      const detail =
+        run && "statusMessage" in run && typeof (run as { statusMessage?: string }).statusMessage === "string"
+          ? (run as { statusMessage: string }).statusMessage
+          : "";
+      throw new Error(
+        `Apify run ${runId} ended with status: ${status}${detail ? ` — ${detail}` : ""}`,
+      );
     }
 
     await new Promise((resolve) => setTimeout(resolve, pollMs));
@@ -88,7 +113,7 @@ export async function openAiJson<T>(
   user: string,
   guard: (payload: JsonRecord) => T,
 ): Promise<T> {
-  const { OPENAI_API_KEY } = getTaskEnv();
+  const OPENAI_API_KEY = getEnv("OPENAI_API_KEY");
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {

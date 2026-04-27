@@ -102,6 +102,21 @@ async function incrementCompletedChildren(parentJobId: string): Promise<void> {
   await supabase.rpc("increment_completed_children", { job_id: parentJobId });
 }
 
+function formatChildTaskError(err: unknown): string {
+  if (typeof err === "string" && err.trim()) return err;
+  if (err && typeof err === "object" && "message" in err) {
+    const m = (err as { message?: unknown }).message;
+    if (typeof m === "string" && m.trim()) return m;
+  }
+  try {
+    const s = JSON.stringify(err);
+    if (typeof s === "string" && s !== "undefined") return s;
+  } catch {
+    // fall through
+  }
+  return String(err);
+}
+
 function getTaskOutput<T>(result: unknown, taskId: string): T {
   if (
     typeof result === "object" &&
@@ -113,14 +128,13 @@ function getTaskOutput<T>(result: unknown, taskId: string): T {
     return (result as { output: T }).output;
   }
 
-  const message =
-    typeof result === "object" &&
-    result !== null &&
-    "error" in result &&
-    typeof (result as { error?: unknown }).error === "string"
-      ? (result as { error: string }).error
-      : `Task ${taskId} failed`;
-  throw new Error(message);
+  if (typeof result === "object" && result !== null && "error" in result) {
+    const message = formatChildTaskError((result as { error: unknown }).error);
+    if (message && message !== "{}") {
+      throw new Error(`${taskId}: ${message}`);
+    }
+  }
+  throw new Error(`Task ${taskId} failed (no output)`);
 }
 
 // ---------------------------------------------------------------------------

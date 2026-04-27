@@ -9,8 +9,24 @@ import {
 
 export type FindProfilesPayload = {
   query: string;
+  /** Pass-through for contacts-api~instagram-profile-finder; default United States. */
+  country?: string;
   maxProfiles?: number;
 };
+
+/** At least one keyword required by Apify; split comma/semicolon/newline or use whole query. */
+function keywordsFromQuery(query: string): string[] {
+  const trimmed = query.trim();
+  if (!trimmed) {
+    throw new Error("find-profiles: query is empty; keywords cannot be built");
+  }
+  const parts = trimmed
+    .split(/[,;\n]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (parts.length > 0) return parts;
+  return [trimmed];
+}
 
 export type FindProfilesResult = {
   profiles: Array<{
@@ -26,8 +42,9 @@ export const findProfilesTask = task({
   id: "find-profiles",
   run: async (payload: FindProfilesPayload): Promise<FindProfilesResult> => {
     const run = await apifyRunActor("contacts-api~instagram-profile-finder", {
-      searchTerms: [payload.query],
-      maxProfilesPerQuery: payload.maxProfiles ?? 50,
+      keywords: keywordsFromQuery(payload.query),
+      country: payload.country ?? "United States",
+      max_leads: payload.maxProfiles ?? 50,
     });
 
     await apifyWaitForRunCompletion(run.runId);
@@ -36,9 +53,10 @@ export const findProfilesTask = task({
       .map((item) => {
         const record = item as Record<string, unknown>;
         const username = asString(record.username);
-        const biography = asString(record.biography);
-        if (!username || !biography) return null;
+        if (!username) return null;
 
+        const biography =
+          asString(record.biography) ?? asString(record.bio) ?? "";
         const fullName = asString(record.fullName) ?? asString(record.full_name) ?? "";
         const followersCount =
           asNumber(record.followersCount) ?? asNumber(record.followers) ?? 0;
