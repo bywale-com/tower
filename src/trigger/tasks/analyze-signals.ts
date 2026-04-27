@@ -40,19 +40,15 @@ function extractComments(
   if (!raw || typeof raw !== "object") return [];
   const data = (raw as { data?: unknown }).data;
   if (!Array.isArray(data)) return [];
-  return data
-    .map((item) => {
-      const record = item as Record<string, unknown>;
-      const text = asString(record.text);
-      if (!text) return null;
-      return {
-        text,
-        commenter_username: asString(record.ownerUsername),
-        commented_at: asString(record.timestamp),
-        replies: record.replies ?? [],
-      };
-    })
-    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+  return data.map((item) => {
+    const record = item as Record<string, unknown>;
+    return {
+      text: asString(record.text) ?? "",
+      commenter_username: asString(record.ownerUsername),
+      commented_at: asString(record.timestamp),
+      replies: record.replies ?? [],
+    };
+  });
 }
 
 export const analyzeSignalsTask = task({
@@ -82,10 +78,6 @@ export const analyzeSignalsTask = task({
     }> = [];
 
     for (const comment of comments) {
-      if (ownerUsername && comment.commenter_username && ownerUsername === comment.commenter_username) {
-        continue;
-      }
-
       const classification = await openAiJson(
         "You are a signal classifier. Return JSON only.",
         `Caption: ${post.caption ?? ""}\nComment: ${comment.text}\nReply thread: ${JSON.stringify(

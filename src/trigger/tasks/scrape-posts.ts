@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { task } from "@trigger.dev/sdk/v3";
 import {
   apifyGetDatasetItems,
@@ -8,6 +9,29 @@ import {
   closeJob,
   getSupabaseAdmin,
 } from "./helpers";
+
+/** Prefer Instagram shortcode; otherwise id, URL parse, or stable hash — never drop rows for missing shortCode. */
+function platformPostIdFromApifyItem(post: Record<string, unknown>): string {
+  const direct =
+    asString(post.shortCode) ??
+    asString(post.shortcode) ??
+    asString(post.code);
+  if (direct) return direct;
+
+  const idVal = post.id;
+  if (typeof idVal === "string" && idVal.trim()) return idVal.trim();
+  if (typeof idVal === "number" && Number.isFinite(idVal)) return String(Math.trunc(idVal));
+
+  for (const key of ["url", "link", "permalink"] as const) {
+    const url = asString(post[key]);
+    if (url) {
+      const m = url.match(/instagram\.com\/(?:p|reel|tv)\/([^/?#]+)/i);
+      if (m?.[1]) return m[1];
+    }
+  }
+
+  return `hash_${createHash("sha256").update(JSON.stringify(post)).digest("hex").slice(0, 24)}`;
+}
 
 export type ScrapePostsPayload = {
   surfaceId: string;
@@ -38,8 +62,7 @@ export const scrapePostsTask = task({
     const rows = items
       .map((item) => {
         const post = item as Record<string, unknown>;
-        const platformPostId = asString(post.shortCode) ?? asString(post.shortcode);
-        if (!platformPostId) return null;
+        const platformPostId = platformPostIdFromApifyItem(post);
         return {
           platform_post_id: platformPostId,
           surface_id: payload.surfaceId,
@@ -51,8 +74,7 @@ export const scrapePostsTask = task({
           scraped_at: new Date().toISOString(),
           latest_comments: { data: (post.latestComments as unknown) ?? [] },
         };
-      })
-      .filter((row): row is NonNullable<typeof row> => Boolean(row));
+      });
 
     if (rows.length > 0) {
       const { error } = await supabase.from("posts").upsert(rows, {
