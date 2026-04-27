@@ -36,8 +36,8 @@ export const findProfilesTask = task({
       .map((item) => {
         const record = item as Record<string, unknown>;
         const username = asString(record.username);
-        const biography = asString(record.biography);
-        if (!username || !biography) return null;
+        if (!username) return null;
+        const biography = asString(record.biography) ?? "";
 
         const fullName = asString(record.fullName) ?? asString(record.full_name) ?? "";
         const followersCount =
